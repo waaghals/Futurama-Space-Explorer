@@ -12,13 +12,15 @@ import me.waaghals.dungeoncrawler.items.Item;
 public class Room {
 
 	private HashMap<Integer, Room> exits;
-	private ArrayList<Item> items; //Don't use a single item, a user could drop an item in a room where a item already exists.
+	private HashMap<String, Item> items; // Don't use a single item, a user could drop
+									// an item in a room where a item already
+									// exists.
 	private String entryText;
-	
-	public boolean hasExit(Integer direction){
+
+	public boolean hasExit(Integer direction) {
 		return exits.containsKey(direction);
 	}
-	
+
 	/**
 	 * Set the name of an item
 	 * 
@@ -27,11 +29,12 @@ public class Room {
 	 * @return Room
 	 * @throws IllegalArgumentException
 	 */
-	public Room getAdjacentRoom(Integer direction){
-		
-		//Make sure we don't get any errors trying to take a non existing exit.
-		if(!exits.containsKey(direction)){
-			throw new IllegalArgumentException("Room does not have an exit here.");
+	public Room getAdjacentRoom(Integer direction) {
+
+		// Make sure we don't get any errors trying to take a non existing exit.
+		if (!exits.containsKey(direction)) {
+			throw new IllegalArgumentException(
+					"Room does not have an exit here.");
 		}
 		return exits.get(direction);
 	}
@@ -43,7 +46,7 @@ public class Room {
 	public void setEntryText(String entryText) {
 		this.entryText = entryText;
 	}
-	
+
 	/**
 	 * Add an door to a new room
 	 * 
@@ -54,31 +57,25 @@ public class Room {
 		exits.put(direction, room);
 	}
 
-	public ArrayList<Item> getItems() {
-		return items;
-	}
-
 	/**
 	 * Add an item to the room
 	 * 
 	 * @param newItem
 	 */
 	public void addItem(Item item) {
-		items.add(item);
+		items.put(item.getName(), item);
 	}
-	
+
 	/**
-	 * Returns true if the room has an Item with itemName.
+	 * Returns an Item if it is in the room else returns null.
 	 * 
 	 * @param itemName
-	 * @return boolean
+	 * @return Item if it is in the room
 	 */
-	public boolean has(String itemName) {
-		for (Item item : items) {
-			if (item.getName().equals(itemName)) {
-				return true;
-			}
+	public Item get(String itemName) {
+		if (items.containsKey(itemName)) {
+			return items.get(itemName);
 		}
-		return false;
+		return null;
 	}
 }

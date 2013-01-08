@@ -29,6 +29,24 @@ public class Player {
 		return null;
 	}
 	
+	/**
+	 * Add new item to the users backpack
+	 * 
+	 * @param item
+	 * @return true on success else false
+	 */
+	public boolean add(Item item){
+		if(backpack.size() < BACKPACK_SIZE){
+			backpack.put(item.getName(), item);
+			return true;
+		}
+		
+		//TODO explain backpack is full
+		return false;
+		
+		
+	}
+	
 	public void use(String itemName){
 		Item item = get(itemName);
 		if(item != null){

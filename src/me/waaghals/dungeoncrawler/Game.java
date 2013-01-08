@@ -115,10 +115,10 @@ public class Game {
 	}
 
 	private void handleUseCommand(String itemName) {
-		if(player.has(itemName)){
+		if(player.get(itemName) != null){
 			player.use(itemName);
-		} else if(player.getCurRoom().has(itemName)) { //Does the room has this item?
-			player.addItem()
+		} else if(player.getCurRoom().get(itemName) != null) { //Does the room has this item?
+			//TODO player.addItem()
 		}
 		// Check if the player has the item in his backpack.
 		// If in the backpack: use it.
