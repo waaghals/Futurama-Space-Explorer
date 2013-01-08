@@ -1,5 +1,7 @@
 package me.waaghals.dungeoncrawler.items;
 
+import java.util.Random;
+
 /**
  * @author Patrick Berenschot
  * 
@@ -8,6 +10,21 @@ public abstract class Item {
 
 	private String name;
 	private String useText;
+	
+	//
+	/*  
+	 * Array for damages, damage get randomly picked from this array. Repeat values more often for "weighted" random.
+	 * Plotted, low to high  (Bear with me xD) 
+	 * 
+	 *  Exponential      Logaritmic        Liniar
+	 *  |          .     |             .   |             .
+	 *  |         .      |             .   |          .
+	 *  |        .       |            .    |       .
+	 *  |     .          |         .       |    .
+	 *  | .              |....   `         |.
+	 *  +--------------  +---------------  +---------------
+	 */
+	private int[] damageMap;
 
 	public String getName() {
 		return name;
@@ -35,6 +52,14 @@ public abstract class Item {
 
 	public void setUseText(String useText) {
 		this.useText = useText;
+	}
+	
+	public int getDamage(){
+		if(damageMap.length != 0){
+			Random randomGenerator = new Random();
+			return  randomGenerator.nextInt(damageMap.length);
+		}
+		return 0;
 	}
 
 	//How does one create an interface for an an expendable object?
