@@ -65,6 +65,23 @@ public class Room {
 	public void addItem(Item item) {
 		items.put(item.getName(), item);
 	}
+	
+	/**
+	 * Remove an item to the room
+	 * 
+	 * @param itemName
+	 * @return Item which was removed
+	 */
+	public Item removeItem(String itemName) {
+		Item tempItem = get(itemName);
+		
+		//if the item exists
+		if (tempItem != null) {
+			items.remove(itemName);
+			return tempItem;
+		}
+		return null;
+	}
 
 	/**
 	 * Returns an Item if it is in the room else returns null.

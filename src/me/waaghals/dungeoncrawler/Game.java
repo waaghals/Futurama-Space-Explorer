@@ -2,6 +2,8 @@ package me.waaghals.dungeoncrawler;
 
 import java.util.ArrayList;
 
+import me.waaghals.dungeoncrawler.items.Item;
+
 /**
  * @author Patrick Berenschot
  * 
@@ -48,19 +50,43 @@ public class Game {
 	 */
 	private void handleCommand(String userInput) {
 		String[] arguments = userInput.split(" ");
+		
 
 		//With each command move the enemy closer to the player
+		//TODO cleanup argument checking
 		switch (arguments[0]) // arguments[0] is the command by the user
 		{
 		
 		case "go":
-
+			//Make sure the user adds a direction
+			if(arguments.length == 2){
+				player.move(arguments[1]); //direction
+				break;
+			}
+			//TODO say missing argument
 			break;
 		case "get":
+			//Make sure the user adds an item to use
+			if(arguments.length == 2){
+				//Does the current room have an item with itemName
+				Item itemFromRoom = player.getCurRoom().removeItem(arguments[1]);
 
+				if(itemFromRoom != null){
+					player.add(itemFromRoom);
+				}
+				break;
+			}
+			//TODO say missing argument
 			break;
 		case "use":
-
+			//Make sure the user adds an item to use
+			if(arguments.length == 2){
+				handleUseCommand(arguments[1]);
+			} else if(arguments.length > 2){
+				handleUseCommand(arguments[1], arguments[2]); //item, argument
+			} else {
+				//TODO say needs item to use (argument missing)
+			}
 			break;
 		case "pack":
 
@@ -115,17 +141,27 @@ public class Game {
 	}
 
 	private void handleUseCommand(String itemName) {
-		if(player.get(itemName) != null){
-			player.use(itemName);
-		} else if(player.getCurRoom().get(itemName) != null) { //Does the room has this item?
-			//TODO player.addItem()
+		if(player.get(itemName) != null){							//Does the player have itemName
+			player.use(itemName);	
+		} else if(player.getCurRoom().get(itemName) != null) { 		//Does the room have itemName
+			if(player.add(player.getCurRoom().get(itemName))){  	//Is the player able to add the item from the current room to its backpack
+				player.use(itemName);
+			}
+		} else {
+			//TODO say no item with itemName
 		}
-		// Check if the player has the item in his backpack.
-		// If in the backpack: use it.
-		// If not in the backpack: check if the item is in the room.
-		// If the item is in the room: use it.
-		// If no item with that name is present: tell the user he’s
-		// trying to use something that isn’t there.
+	}
+	
+	private void handleUseCommand(String itemName, String argument) {
+		if(player.get(itemName) != null){							//Does the player have itemName
+			player.use(itemName, argument);	
+		} else if(player.getCurRoom().get(itemName) != null) { 		//Does the room have itemName
+			if(player.add(player.getCurRoom().get(itemName))){  	//Is the player able to add the item from the current room to its backpack
+				player.use(itemName, argument);
+			}
+		} else {
+			//TODO say no item with itemName
+		}
 	}
 
 	private void handleDropCommand(String itemName) {
