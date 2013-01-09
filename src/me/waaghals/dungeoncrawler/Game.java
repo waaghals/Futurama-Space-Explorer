@@ -102,14 +102,17 @@ public class Game {
 			}
 			return true;
 		case "pack":
-
+			player.showBackpack();
 			return true;
 		case "look":
-
+			player.getCurRoom().sayEntryText();
 			return true;
 
 		case "fight":
-
+			if(arguments.length == 2){
+				//TODO check if opponent is in same room
+				
+			}
 			// TODO default to fist fighting, "fight using" <Item> fights with
 			// said item.
 			return true;
@@ -125,7 +128,7 @@ public class Game {
 			
 		case "help":
 		default:
-			handleHelp();
+			handleHelpCommand();
 			return true;
 		}
 	}
@@ -153,6 +156,24 @@ public class Game {
 		} else {
 			attenborough.say(Narrator.ITEM_NOT_IN_ROOM, itemName);
 		}
+	}
+	
+	private void handleHelpCommand() {
+		attenborough.say("Usage: \n" +
+				"go <north, east, south or west>\t\t\tTravel in said direction\n" +
+				"get <item>\t\t\tPut <item> in backpack\n" +
+				"use <item>\t\t\tUse <item>\n" +
+				"pack\t\t\t\t\tShows what is in your back pack\n" +
+				"look\t\t\t\t\tTells you what your surrounding look like\n" +
+				"fight\t\t\t\t\tFight your opponent\n" +
+				"fight using <item>\t\t\tFight your opponent and use <item> as a weapon\n" +
+				"loot\t\t\t\t\tGrab stuff from your opponent after you killed it\n" +
+				"help\t\t\t\t\tShows this message\n" +
+				"quit\t\t\t\t\tStops the game\n" +
+				"\n\n\n" +
+				"Objective: \n" +
+				"Survive, find the tresure and bring it back to the start.");
+		
 	}
 
 	private void handleDropCommand(String itemName) {

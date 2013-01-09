@@ -53,4 +53,11 @@ public class Narrator {
 		"Nope, there is no %s here",
 		"Are you sure you meant %s?"
 	};
+	
+	public static final String[] BACKPACK_CONTENT = {
+		"You have a %s.",
+		"This looks like a %s",
+		"There is a %s in your backpack",
+		"You found a %s somewhere"
+	};
 }

@@ -2,6 +2,8 @@ package me.waaghals.dungeoncrawler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import me.waaghals.dungeoncrawler.items.Item;
 
@@ -15,6 +17,7 @@ public class Player {
 	
 	private HashMap<String, Item> backpack;
 	private Room curRoom; // The room the user is in
+	private Narrator attenborough = Narrator.getInstance(); 
 
 	/**
 	 * Returns an Item if backpack holds it else returns null.
@@ -27,6 +30,28 @@ public class Player {
 			return backpack.get(itemName);
 		} 
 		return null;
+	}
+	
+	/**
+	 * Tells the contents of the backpack
+	 * 
+	 */
+	public void showBackpack() {
+		int i = 0;
+		for (Entry<String, Item> item : backpack.entrySet())
+		{
+		    //item key is the itemName
+		    attenborough.say(Narrator.BACKPACK_CONTENT, item.getKey());
+		    
+		    //Add a comma between sentences
+		    if(i > 0 && i < backpack.size()){
+		    	attenborough.say(", ");
+		    	
+		    //In the last place add " and "
+		    } else if (i == backpack.size()){
+		    	attenborough.say(" and ");
+		    }
+		}
 	}
 	
 	/**

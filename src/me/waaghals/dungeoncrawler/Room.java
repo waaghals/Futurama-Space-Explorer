@@ -16,6 +16,7 @@ public class Room {
 									// an item in a room where a item already
 									// exists.
 	private String entryText;
+	private Narrator attenborough = Narrator.getInstance(); 
 
 	public boolean hasExit(Integer direction) {
 		return exits.containsKey(direction);
@@ -39,8 +40,8 @@ public class Room {
 		return exits.get(direction);
 	}
 
-	public String getEntryText() {
-		return entryText;
+	public void sayEntryText() {
+		attenborough.say(entryText);
 	}
 
 	public void setEntryText(String entryText) {

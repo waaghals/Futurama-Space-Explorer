@@ -17,7 +17,7 @@ public abstract class Item {
 		"Fighting using %s! Massive hit. %d%% damage to your opponent!.", //Escape % with a %
 		"BAM! %d%% damage against your opponent.",
 		"Blow to the head, that'll teach 'em!",
-		"KAPOW! You hit like Badr Hari",
+		"KAPOW! You hit like Badr Hari!",
 		"Good job Chris brown! %d%% damage!"
 	};
 	
@@ -28,14 +28,16 @@ public abstract class Item {
 	};
 	
 	public static final String[] FIGHT_USING_ITEM_HIGH_LOW = {
-		"Did you even hit?",
-		"Well, you might have made a mark there!",
-		"Like a feather bag to the knee, only %d%% amount of damage."
+		"Did you even hit? Well don't expect that the %s does al the work!",
+		"Well, you might have made a tiny mark there with a %s",
+		"Like a feather bag to the knee, only %d%% amount of damage.",
+		"%d%% damage, your opponent has an itch."
 	};
 	
 	public static final String[] FIGHT_USING_ITEM_HIGH_NONE = {
 		"Miss!!",
-		"Are you even trying? No success"
+		"Are you even trying? No success",
+		"Sure you can even use a %s for fighting?"
 	};
 	
 	//
@@ -89,7 +91,7 @@ public abstract class Item {
 			attenborough.say(Item.FIGHT_USING_ITEM_HIGH_MEDIUM, name, damage);
 		} else if(damage > 20){
 			attenborough.say(Item.FIGHT_USING_ITEM_HIGH_LOW, name, damage);
-		} else if(damage > 60){
+		} else if(damage == 0){
 			attenborough.say(Item.FIGHT_USING_ITEM_HIGH_NONE, name, damage);
 		}
 		return damage;
