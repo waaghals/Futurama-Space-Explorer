@@ -94,6 +94,7 @@ public class Room {
 		if (items.containsKey(itemName)) {
 			return items.get(itemName);
 		}
+		//TODO say item was not in the room
 		return null;
 	}
 }

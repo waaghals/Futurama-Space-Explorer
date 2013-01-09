@@ -18,7 +18,12 @@ public class Player {
 	private HashMap<String, Item> backpack;
 	private Room curRoom; // The room the user is in
 	private Narrator attenborough = Narrator.getInstance(); 
+	private String name;
 
+	
+	public Player(String name){
+		setName(name);
+	}
 	/**
 	 * Returns an Item if backpack holds it else returns null.
 	 * 
@@ -32,6 +37,14 @@ public class Player {
 		return null;
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	/**
 	 * Tells the contents of the backpack
 	 * 
@@ -67,9 +80,24 @@ public class Player {
 		}
 		
 		//TODO explain backpack is full
-		return false;
-		
-		
+		return false;	
+	}
+	
+	/**
+	 * Remove an item with itemName from the users backpack
+	 * 
+	 * @param itemName
+	 * @return Item which was removed else null
+	 */
+	public Item drop(String itemName) {
+		if(backpack.containsKey(itemName)){
+			Item tempItem = backpack.get(itemName);
+			backpack.remove(itemName);
+			//TODO say it is dropped
+			return tempItem;
+		}
+		//TODO say nothing to drop
+		return null;
 	}
 	
 	public void use(String itemName){
