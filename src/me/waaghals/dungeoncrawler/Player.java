@@ -80,6 +80,7 @@ public class Player {
 		case "n":
 			if (curRoom.hasExit(Main.NORTH)) {
 				setCurRoom(curRoom.getAdjacentRoom(Main.NORTH));
+				//TODO narrate
 				return true;
 			}
 			break;

@@ -1,5 +1,7 @@
 package me.waaghals.dungeoncrawler;
 
+import java.util.logging.Logger;
+
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.layout.*;
@@ -23,6 +25,7 @@ public class Main {
 	public static final int EAST 	= 4;
 	public static final int SOUTH 	= 8;
 	public static final int WEST 	= 16;
+	
 	/**
 	 * @param args
 	 */

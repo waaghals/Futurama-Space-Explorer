@@ -1,6 +1,8 @@
 package me.waaghals.dungeoncrawler;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import me.waaghals.dungeoncrawler.items.Item;
 
@@ -11,6 +13,8 @@ import me.waaghals.dungeoncrawler.items.Item;
 public class Game {
 	private ArrayList<Room> rooms;
 	private Player player;
+	private Narrator attenborough;
+
 
 	/**
 	 * @param none
@@ -18,7 +22,7 @@ public class Game {
 	 * 
 	 */
 	public Game() {
-		
+		attenborough = Narrator.getInstance();
 		// Initialize everything you need:
 		// the player, the rooms, items you want in the rooms, everything
 		// then call the run() command.
@@ -148,6 +152,7 @@ public class Game {
 				player.use(itemName);
 			}
 		} else {
+			attenborough.say(Narrator.ITEM_NOT_IN_ROOM, itemName);
 			//TODO say no item with itemName
 		}
 	}
@@ -160,7 +165,7 @@ public class Game {
 				player.use(itemName, argument);
 			}
 		} else {
-			//TODO say no item with itemName
+			attenborough.say(Narrator.ITEM_NOT_IN_ROOM, itemName);
 		}
 	}
 
