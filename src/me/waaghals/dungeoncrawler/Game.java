@@ -1,10 +1,13 @@
 package me.waaghals.dungeoncrawler;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import me.waaghals.dungeoncrawler.items.Item;
+import me.waaghals.dungeoncrawler.items.Narrator;
 
 /**
  * @author Patrick Berenschot
@@ -13,7 +16,7 @@ import me.waaghals.dungeoncrawler.items.Item;
 public class Game {
 	private ArrayList<Room> rooms;
 	private Player player;
-	private Narrator attenborough;
+	private Narrator attenborough = Narrator.getInstance(); 
 
 
 	/**
@@ -22,37 +25,43 @@ public class Game {
 	 * 
 	 */
 	public Game() {
-		attenborough = Narrator.getInstance();
+
 		// Initialize everything you need:
 		// the player, the rooms, items you want in the rooms, everything
 		// then call the run() command.
+		
+		//All systems GO!
+		run();
 	}
 
 	/**
-	 * @param none
-	 * 
+	 * Run the game and keep asking for user input
 	 * 
 	 *            Run the game
 	 */
 	private void run() {
-		try {
-			// As long as the command isn’t to quit:
-			// get the next input line and handle it. (With handleCommand.)
-		} catch (Exception e) {
-			// Something went terribly wrong. Inform the user.
+		InputStreamReader istream = new InputStreamReader(System.in) ;
+        BufferedReader bufRead = new BufferedReader(istream) ;
+
+        try {
+        	 while(true){
+        		 if(!handleCommand(bufRead.readLine())){
+        			 //Stop asking for user input
+        			 break;
+        		 }
+        	 }
+        }catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
 	/**
+	 * Process the users input
+	 * 
 	 * @param userInput
-	 *            (This is the entire input string from the user.)
-	 * 
-	 * 
-	 *            (Tell others to) Perform the task which belongs to the given
-	 * 
-	 *            command.
+	 * @return false if user typed quit else true
 	 */
-	private void handleCommand(String userInput) {
+	private boolean handleCommand(String userInput) {
 		String[] arguments = userInput.split(" ");
 		
 
@@ -65,10 +74,10 @@ public class Game {
 			//Make sure the user adds a direction
 			if(arguments.length == 2){
 				player.move(arguments[1]); //direction
-				break;
+				return true;
 			}
 			//TODO say missing argument
-			break;
+			return true;
 		case "get":
 			//Make sure the user adds an item to use
 			if(arguments.length == 2){
@@ -78,10 +87,10 @@ public class Game {
 				if(itemFromRoom != null){
 					player.add(itemFromRoom);
 				}
-				break;
+				return true;
 			}
 			//TODO say missing argument
-			break;
+			return true;
 		case "use":
 			//Make sure the user adds an item to use
 			if(arguments.length == 2){
@@ -91,57 +100,34 @@ public class Game {
 			} else {
 				//TODO say needs item to use (argument missing)
 			}
-			break;
+			return true;
 		case "pack":
 
-			break;
+			return true;
 		case "look":
 
-			break;
-		case "help":
-
-			break;
+			return true;
 
 		case "fight":
 
 			// TODO default to fist fighting, "fight using" <Item> fights with
 			// said item.
-			break;
+			return true;
 
 		case "loot":
 
 			// TODO make sure the enemy is dead first
-			break;
+			return true;
 
 		case "quit":
-
-			break;
+			//Player wants to quit, return false!
+			return false;
+			
+		case "help":
 		default:
-
-			break;
+			handleHelp();
+			return true;
 		}
-
-		// Split the user input string.
-		// The first word is a command. The rest is extra information
-		// Check if the command is to travel between rooms. If so, handle
-		// the room travelling using the method: checkRoomTravel
-		// This one is explained later.
-		//
-		//
-		//
-		//
-		//
-		//
-		//
-		//
-		/*
-		 * If there isn’t any room travel, then check all other command command
-		 * options. (Oh, look: this might be a great place for a switch over the
-		 * command string.) Depending on the command, you might also need the
-		 * extra information. e.g. “use stick”, has “use” as command and “stick”
-		 * as extra information. To make things easy, we created private methods
-		 * to handle the commands. They are presented below.
-		 */
 	}
 
 	private void handleUseCommand(String itemName) {

@@ -9,7 +9,7 @@ import java.util.logging.LogRecord;
  * @author Patrick Berenschot
  * 
  */
-class Narrator {
+public class Narrator {
 	private static Narrator instance;
 
 	private Narrator() {
