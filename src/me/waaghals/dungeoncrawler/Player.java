@@ -89,6 +89,16 @@ public class Player {
 			//TODO emit player does not own.
 		}
 	}
+	
+	public int fight(String itemName){
+		return backpack.get(itemName).fight();
+	}
+
+	public int fight(){
+		//Fight using the players "fists"
+		Item fists = new Fists("fists", new int[] {0, 5, 5, 5, 8, 8, 15});
+		return fists.fight();
+	}
 
 	/**
 	 * Move a player to a new room
@@ -142,18 +152,38 @@ public class Player {
 
 	public Room getCurRoom() {
 		return curRoom;
+		
 	}
 
 	/**
 	 * Place the user in a new room
 	 * 
 	 * @param newRoom
-	 * @return entryText from room
 	 */
-	public String setCurRoom(Room curRoom) {
+	public void setCurRoom(Room curRoom) {
 		this.curRoom = curRoom;
 
 		// return the entryText for the new room so it can be spoken
-		return curRoom.getEntryText();
+		curRoom.sayEntryText();
+	}
+	
+	public static class Fists extends Item{
+		public Fists(String name, int[] damageMap) {
+			super(name, damageMap);
+		}
+		
+		public static final String[] FIGHT_USING_ITEM_HIGH_LOW = {
+			"Did you even hit? Well don't expect that your fists do all the work!",
+			"Well, you might have made a tiny mark there with your fists",
+			"Like a feather bag to the knee, only %d%% amount of damage.",
+			"%d%% damage, your opponent has an itch."
+		};
+		
+		public static final String[] FIGHT_USING_ITEM_HIGH_NONE = {
+			"Miss!!",
+			"Are you even trying? No success",
+			"Where did you learn how to fight?"
+		};
+		
 	}
 }

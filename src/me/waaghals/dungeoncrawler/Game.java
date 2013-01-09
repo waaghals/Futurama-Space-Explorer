@@ -7,7 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import me.waaghals.dungeoncrawler.items.Item;
-import me.waaghals.dungeoncrawler.items.Narrator;
 
 /**
  * @author Patrick Berenschot
@@ -109,10 +108,17 @@ public class Game {
 			return true;
 
 		case "fight":
+			int damage;
 			if(arguments.length == 2){
+				//TODO say not enough arguments
+				damage = player.fight();
+			} else if(arguments.length == 3){
+				if(arguments[1].equals("usage")){
+					damage = player.fight(arguments[2]);
+				}
 				//TODO check if opponent is in same room
 				
-			}
+			} 
 			// TODO default to fist fighting, "fight using" <Item> fights with
 			// said item.
 			return true;

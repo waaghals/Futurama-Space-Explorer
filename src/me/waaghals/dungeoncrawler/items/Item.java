@@ -28,7 +28,7 @@ public abstract class Item {
 	};
 	
 	public static final String[] FIGHT_USING_ITEM_HIGH_LOW = {
-		"Did you even hit? Well don't expect that the %s does al the work!",
+		"Did you even hit? Well don't expect that the %s does all the work!",
 		"Well, you might have made a tiny mark there with a %s",
 		"Like a feather bag to the knee, only %d%% amount of damage.",
 		"%d%% damage, your opponent has an itch."
@@ -54,6 +54,12 @@ public abstract class Item {
 	 *  +--------------  +---------------  +---------------
 	 */
 	private int[] damageMap;
+	
+	
+	public Item(String name, int[] damageMap){
+		this.name = name;
+		this.damageMap = damageMap;
+	}
 
 	public String getName() {
 		return name;
