@@ -10,8 +10,8 @@ import me.waaghals.dungeoncrawler.*;
 public abstract class Item {
 
 	private String name;
-	private String useText;
-	private Narrator attenborough = Narrator.getInstance(); 
+	private String fancyName;
+	protected Narrator farnsworth = Narrator.getInstance(); 
 	
 	public static final String[] FIGHT_USING_ITEM_HIGH_DAMAGE = {
 		"Fighting using %s! Massive hit. %d%% damage to your opponent!.", //Escape % with a %
@@ -53,11 +53,19 @@ public abstract class Item {
 	 *  | .              |....   `         |.
 	 *  +--------------  +---------------  +---------------
 	 */
-	private int[] damageMap;
+	private int[] damageMap = new int[] {0};
 	
 	
-	public Item(String name, int[] damageMap){
+	public Item(String name){
 		this.name = name;
+		this.fancyName = name;
+	}
+
+	public int[] getDamageMap() {
+		return damageMap;
+	}
+
+	public void setDamageMap(int[] damageMap) {
 		this.damageMap = damageMap;
 	}
 
@@ -81,32 +89,23 @@ public abstract class Item {
 		this.name = name;
 	}
 
-	public String getUseText() {
-		return useText;
-	}
-
-	public void setUseText(String useText) {
-		this.useText = useText;
-	}
-	
 	public int fight(){
 		int damage = getDamage();
 		if(damage > 90){
-			attenborough.say(Item.FIGHT_USING_ITEM_HIGH_DAMAGE, name, damage);
+			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_DAMAGE, name, damage);
 		} else if(damage > 60){
-			attenborough.say(Item.FIGHT_USING_ITEM_HIGH_MEDIUM, name, damage);
-		} else if(damage > 20){
-			attenborough.say(Item.FIGHT_USING_ITEM_HIGH_LOW, name, damage);
+			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_MEDIUM, name, damage);
+		} else if(damage > 30){
+			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_LOW, name, damage);
 		} else if(damage == 0){
-			attenborough.say(Item.FIGHT_USING_ITEM_HIGH_NONE, name, damage);
+			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_NONE, name, damage);
 		}
 		return damage;
 	}
 	
-	private int getDamage(){
+	protected int getDamage(){
 		if(damageMap.length != 0){
-			Random randomGenerator = new Random();
-			return  randomGenerator.nextInt(damageMap.length);
+			return  Constants.generator.nextInt(damageMap.length);
 		}
 		return 0;
 	}
@@ -120,5 +119,13 @@ public abstract class Item {
 
 	public void use(String argument) {
 		throw new UnsupportedOperationException("use() must be overridden by all subclasses of Item");
+	}
+
+	public void setFancyName(String fancyName) {
+		this.fancyName = fancyName;
+	}
+
+	public String getFancyName() {
+		return fancyName;
 	}
 }

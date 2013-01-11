@@ -3,43 +3,102 @@ package me.waaghals.dungeoncrawler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.apache.commons.collections15.FactoryUtils;
+import javax.swing.JFrame;
 
-import edu.uci.ics.jung.algorithms.generators.random.BarabasiAlbertGenerator;
-
-import me.waaghals.dungeoncrawler.items.Item;
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import me.waaghals.dungeoncrawler.factory.GameLevelFactory;
+import me.waaghals.dungeoncrawler.items.*;
 
 /**
  * @author Patrick Berenschot
  * 
  */
 public class Game {
-	private ArrayList<Room> rooms;
+	private static Game instance;
 	private Player player;
-	private Narrator attenborough = Narrator.getInstance();
-	InputStreamReader istream = new InputStreamReader(System.in);
-	BufferedReader bufRead = new BufferedReader(istream);
+	private Narrator farnsworth = Narrator.getInstance();
+	private InputStreamReader istream = new InputStreamReader(System.in);
+	private BufferedReader bufRead = new BufferedReader(istream);
+	private GameLevel currLevel;
+	private Room startRoom;
+
+	public Room getStartRoom() {
+		return startRoom;
+	}
 
 	/**
 	 * @param none
 	 * 
 	 * 
 	 */
-	public Game() {
+	private Game() {
 
-		player = new Player(getUserInput("What is your name?"));
-		
-		
-		// Initialize everything you need:
-		// the player, the rooms, items you want in the rooms, everything
-		// then call the run() command.
+		player = new Player();
+		// Create the level and add them to the room
+		currLevel = new GameLevelFactory(3).create();
+		startRoom = currLevel.getRandomRoom();
+
+		intro();
 
 		// All systems GO!
 		run();
+	}
+
+	private void sleep(int time) {
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void cleanScreen(boolean slow) {
+		if (slow) {
+			for (int i = 0; i < 23; i++) {
+				System.out.println();
+				sleep(150);
+			}
+		}
+		for (int i = 0; i < 100; i++) {
+			System.out.println();
+		}
+	}
+
+	private void intro() {
+		farnsworth.say(Narrator.IMAGE_LOGO);
+		sleep(1000);
+		cleanScreen(true);
+		for (int i = 10; i > 0; i--) {
+			sleep(150);
+			cleanScreen(false);
+			farnsworth.say(Narrator.IMAGE_SHIP);
+
+			// Space between ship and ground
+			for (int j = i; j > 0; j--) {
+				System.out.println();
+			}
+			farnsworth
+					.say("----------------------------------------------------------------------------");
+		}
+		sleep(1000);
+		farnsworth.say(Narrator.GAME_INTRO);
+		player.setCurrRoom(startRoom);
+	}
+
+	public static Game getInstance() {
+		if (instance == null)
+			// Call the its own constructor, which it can only do itself.
+			instance = new Game();
+		return instance;
+	}
+
+	public void levelUp() {
+		// TODO
+		// currLevel
 	}
 
 	/**
@@ -49,6 +108,7 @@ public class Game {
 	 */
 	private void run() {
 		while (true) {
+			// Ask for user input
 			if (!handleCommand(getUserInput())) {
 				// Stop asking for user input
 				break;
@@ -56,11 +116,15 @@ public class Game {
 		}
 	}
 
-	private String getUserInput(String question) {
-		System.out.println(question);
-		return getUserInput();
+	/**
+	 * 
+	 * 
+	 * @return true if the player is back in the room he started in.
+	 */
+	public boolean isHome() {
+		return player.getCurrRoom() == startRoom;
 	}
-	
+
 	private String getUserInput() {
 		try {
 			return bufRead.readLine();
@@ -69,6 +133,19 @@ public class Game {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	/**
+	 * Preform a step for each enemy, each enemy dicides for its own if it
+	 * should move, attack or do nothing.
+	 */
+	private void stepEnemies() {
+		Enemy[] enemies = currLevel.getEnemies();
+		if (enemies != null) {
+			for (Enemy enemy : currLevel.getEnemies()) {
+				enemy.step();
+			}
+		}
 	}
 
 	/**
@@ -82,73 +159,98 @@ public class Game {
 
 		// With each command move the enemy closer to the player
 		// TODO cleanup argument checking
-		switch (arguments[0]) // arguments[0] is the command by the user
+		switch (arguments[0].toLowerCase()) // arguments[0] is the command by
+											// the user
 		{
 
 		case "go":
 			// Make sure the user adds a direction
 			if (arguments.length == 2) {
-				if (!player.move(arguments[1])) { // direction
-					// TODO say player could not move in that direction
-				}
+				handleGoCommand(arguments[1]);
+				stepEnemies();
 				return true;
 			}
-			// TODO say missing argument
+			farnsworth.say(Narrator.MISSING_ARGUMENT, "go");
 			return true;
 		case "get":
 			// Make sure the user adds an item to use
 			if (arguments.length == 2) {
 				handleGetCommand(arguments[1]);
+				stepEnemies();
 				return true;
 			}
-			// TODO say missing argument
+			farnsworth.say(Narrator.MISSING_ARGUMENT, "get");
 			return true;
 		case "use":
 			// Make sure the user adds an item to use
 			if (arguments.length == 2) {
 				handleUseCommand(arguments[1]);
+				stepEnemies();
 				return true;
 			} else if (arguments.length > 2) {
 				handleUseCommand(arguments[1], arguments[2]); // item, argument
+				stepEnemies();
 				return true;
 			}
-			// TODO say needs item to use (argument missing)
+			farnsworth.say(Narrator.MISSING_ARGUMENT, "use");
 			return true;
 		case "drop":
 			// Make sure the user adds an item to use
 			if (arguments.length == 2) {
 				handleDropCommand(arguments[1]);
+				stepEnemies();
 				return true;
 			}
-			// TODO say needs item to use (argument missing)
+			farnsworth.say(Narrator.MISSING_ARGUMENT, "drop");
+			return true;
 
-			return true;
 		case "pack":
+		case "backpack":
+		case "items":
 			player.showBackpack();
+			stepEnemies();
 			return true;
+
 		case "look":
-			player.getCurRoom().sayEntryText();
+			player.getCurrRoom().sayEntryText();
+			player.getCurrRoom().sayPosibleDirections();
+			player.getCurrRoom().sayItems();
+			stepEnemies();
 			return true;
 
 		case "fight":
-			int damage;
-			if (arguments.length == 2) {
-				// TODO say not enough arguments
-				damage = player.fight();
-			} else if (arguments.length == 3) {
-				if (arguments[1].equals("usage")) {
-					damage = player.fight(arguments[2]);
-				}
-				// TODO check if opponent is in same room
-
+			if (arguments.length == 1) {
+				handleFightCommand();
+				stepEnemies();
+			} else if (arguments.length == 2) {
+				farnsworth.say(Narrator.MISSING_ARGUMENT, "fight");
+			} else if (arguments[1].equals("using")) {
+				handleFightCommand(arguments[2]);
+				stepEnemies();
 			}
-			// TODO default to fist fighting, "fight using" <Item> fights with
-			// said item.
 			return true;
 
 		case "loot":
+			handleLootCommand();
+			stepEnemies();
+			return true;
 
-			// TODO make sure the enemy is dead first
+		case "stats":
+			farnsworth.say(currLevel.toString());
+			return true;
+
+		case "map":
+
+			// Sadly no SWT for JUNG
+			JFrame jf = new JFrame();
+			Graph<Room, Path> g = currLevel.getMap();
+			System.out.println(g);
+			VisualizationViewer<Room, Path> vv = new VisualizationViewer<Room, Path>(
+					new CircleLayout<Room, Path>(g));
+			jf.getContentPane().add(vv);
+			// jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			jf.pack();
+			jf.setVisible(true);
 			return true;
 
 		case "quit":
@@ -156,92 +258,155 @@ public class Game {
 			return false;
 
 		case "help":
-		default:
 			handleHelpCommand();
+			return true;
+
+		default:
+			farnsworth.say(Narrator.NOT_RECOGNISED);
 			return true;
 		}
 	}
 
-	private void handleUseCommand(String itemName) {
-		if (player.get(itemName) != null) { // Does the player have itemName
-			player.use(itemName);
-		} else if (player.getCurRoom().get(itemName) != null) { // Does the room
-																// have itemName
-			if (player.add(player.getCurRoom().get(itemName))) { // Is the
-																	// player
-																	// able to
-																	// add the
-																	// item from
-																	// the
-																	// current
-																	// room to
-																	// its
-																	// backpack
-				player.use(itemName);
+	private void handleGoCommand(String direction) {
+		int intDirection = Constants.getIntDirection(direction);
+
+		// Does the currRoom have a exit in intDirection?
+		if (player.getCurrRoom().hasExit(intDirection)) {
+			farnsworth.say(Narrator.WALKING, direction);
+			try {
+				player.move(intDirection);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		} else {
-			attenborough.say(Narrator.ITEM_NOT_IN_ROOM, itemName);
-			// TODO say no item with itemName
+			farnsworth.say(Narrator.NO_EXIT, direction);
+		}
+
+	}
+
+	private void handleUseCommand(String itemName) {
+		// Cheat!
+		if (itemName.equals("nibler")) {
+			// Add the Dark Matter to the user.
+			// give him the most powerful weapon
+			// and give him an ipod :)
+
+			// First make sure there is enough room
+			player.emptyBackpack();
+
+			// Add stuff
+			player.add(new Ipod());
+			player.add(new DarkMatter());
+			player.add(new PlanetaryAnnihilator());
+			farnsworth
+					.say("Cheaters!\n:( \n\nI don't wan't to live on this planet anymore");
+		} else {
+			handleUseCommand(itemName, null);
 		}
 	}
 
 	private void handleUseCommand(String itemName, String argument) {
+		Item roomItem = player.getCurrRoom().removeItem(itemName);
 		if (player.get(itemName) != null) { // Does the player have itemName
-			player.use(itemName, argument);
-		} else if (player.getCurRoom().get(itemName) != null) { // Does the room
-																// have itemName
-			if (player.add(player.getCurRoom().get(itemName))) { // Is the
-																	// player
-																	// able to
-																	// add the
-																	// item from
-																	// the
-																	// current
-																	// room to
-																	// its
-																	// backpack
+			if (argument == null) {
+				player.use(itemName);
+			} else {
 				player.use(itemName, argument);
 			}
+		} else if (roomItem != null) {
+			if (player.add(roomItem)) {
+				if (argument == null) {
+					player.use(itemName);
+				} else {
+					player.use(itemName, argument);
+				}
+			}
 		} else {
-			attenborough.say(Narrator.ITEM_NOT_IN_ROOM, itemName);
+			farnsworth.say(Narrator.ITEM_NOT_IN_ROOM, itemName);
 		}
 	}
 
 	private void handleHelpCommand() {
-		attenborough
-				.say("Usage: \n"
-						+ "go <north, east, south or west>\t\t\tTravel in said direction\n"
-						+ "get <item>\t\t\tPut <item> in backpack\n"
-						+ "use <item>\t\t\tUse <item>\n"
-						+ "pack\t\t\t\t\tShows what is in your back pack\n"
-						+ "look\t\t\t\t\tTells you what your surrounding look like\n"
-						+ "fight\t\t\t\t\tFight your opponent\n"
-						+ "fight using <item>\t\t\tFight your opponent and use <item> as a weapon\n"
-						+ "loot\t\t\t\t\tGrab stuff from your opponent after you killed it\n"
-						+ "help\t\t\t\t\tShows this message\n"
-						+ "quit\t\t\t\t\tStops the game\n"
-						+ "\n\n\n"
-						+ "Objective: \n"
-						+ "Survive, find the tresure and bring it back to the start.");
+		farnsworth.say(Narrator.GAME_HELP);
 
 	}
 
 	private void handleDropCommand(String itemName) {
 		Item droppedItem = player.drop(itemName);
 		if (droppedItem != null) {
-			// TODO say stuff was dropped
-			player.getCurRoom().addItem(droppedItem);
+			farnsworth.say(Narrator.ITEM_DROPPED, itemName);
+			player.getCurrRoom().addItem(droppedItem);
+			return;
+		}
+		farnsworth.say(Narrator.ITEM_NOT_IN_BACKPACK, itemName);
+	}
+
+	private void handleGetCommand(String itemName) {
+		Item itemFromRoom = player.getCurrRoom().removeItem(itemName);
+		if (itemFromRoom != null) {
+			player.add(itemFromRoom);
+			return;
+		}
+		farnsworth.say(Narrator.ITEM_NOT_IN_ROOM, itemName);
+	}
+
+	private void handleFightCommand() {
+		handleFightCommand("A non existing itemName"); // Fill fight with fists
+	}
+
+	private void handleFightCommand(String withItemName) {
+		int i = 0;
+		Enemy[] fromLevel = currLevel.getEnemies();
+		if (fromLevel != null) {
+			for (Enemy enemy : fromLevel) {
+				// If there are more enemies in the same room, also fight them.
+				if (enemy.getCurrRoom() == player.getCurrRoom()) {
+					i++;
+					// if withItemName does not exists the player fight using
+					// his
+					// fists
+					int damage = player.fight(withItemName);
+					enemy.damage(damage);
+				}
+			}
+		}
+
+		// Are there enemies in the room?
+		if (i == 0) {
+			farnsworth.say(Narrator.NO_ENEMY);
 		}
 	}
 
-	// Please note that this method looks A LOT like
-	// Game.handleDropCommand, only the other way arround!
-	private void handleGetCommand(String itemName) {
-		Item itemFromRoom = player.getCurRoom().removeItem(itemName);
-		if (itemFromRoom != null) {
-			// TODO say item was retrieved
-			player.add(itemFromRoom);
+	private void handleLootCommand() {
+		int i = 0;
+		Enemy[] fromLevel = currLevel.getEnemies();
+		if (fromLevel != null) {
+			for (Enemy enemy : fromLevel) {
+				// If there are more enemies in the same room, also fight them.
+				if (enemy.getCurrRoom() == player.getCurrRoom()) {
+					if (!enemy.isAlive()) {
+						i++;
+						Item lootedItem = enemy.loot();
+						if (lootedItem != null) {
+							player.add(lootedItem);
+						}
+					}
+				}
+			}
 		}
-		// TODO tell the player he can't do that
+
+		// Where there dead enemies in the room?
+		if (i == 0) {
+			farnsworth.say(Narrator.NO_ENEMY);
+		}
+	}
+
+	public Player getPlayer() {
+		return player;
+	}
+
+	public GameLevel getGameLevel() {
+		return currLevel;
 	}
 }

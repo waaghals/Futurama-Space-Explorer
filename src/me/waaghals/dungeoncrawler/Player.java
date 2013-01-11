@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import me.waaghals.dungeoncrawler.items.Fists;
 import me.waaghals.dungeoncrawler.items.Item;
 
 /**
@@ -12,18 +13,14 @@ import me.waaghals.dungeoncrawler.items.Item;
  * 
  */
 public class Player {
-	
-	public static final int BACKPACK_SIZE = 10;
-	
-	private HashMap<String, Item> backpack;
-	private Room curRoom; // The room the user is in
-	private Narrator attenborough = Narrator.getInstance(); 
-	private String name;
 
-	
-	public Player(String name){
-		setName(name);
-	}
+	public static final int BACKPACK_SIZE = 10;
+
+	private HashMap<String, Item> backpack = new HashMap<String, Item>();
+	private Room currRoom; // The room the user is in
+	private Narrator farnsworth = Narrator.getInstance();
+	private int health = 100;
+
 	/**
 	 * Returns an Item if backpack holds it else returns null.
 	 * 
@@ -31,18 +28,10 @@ public class Player {
 	 * @return Item if backpack holds it
 	 */
 	public Item get(String itemName) {
-		if(backpack.containsKey(itemName)){
+		if (backpack.containsKey(itemName)) {
 			return backpack.get(itemName);
-		} 
+		}
 		return null;
-	}
-	
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	/**
@@ -50,39 +39,46 @@ public class Player {
 	 * 
 	 */
 	public void showBackpack() {
+		if(backpack.size() == 0){
+			farnsworth.say(Narrator.BACKPACK_EMPTY);
+			return;
+		}
 		int i = 0;
-		for (Entry<String, Item> item : backpack.entrySet())
-		{
-		    //item key is the itemName
-		    attenborough.say(Narrator.BACKPACK_CONTENT, item.getKey());
-		    
-		    //Add a comma between sentences
-		    if(i > 0 && i < backpack.size()){
-		    	attenborough.say(", ");
-		    	
-		    //In the last place add " and "
-		    } else if (i == backpack.size()){
-		    	attenborough.say(" and ");
-		    }
+		for (Entry<String, Item> item : backpack.entrySet()) {
+			// item key is the itemName
+			farnsworth.say(Narrator.BACKPACK_CONTENT, item.getKey());
+
+			// Add a comma between sentences
+			if (i > 0 && i < backpack.size()) {
+				farnsworth.say(", ");
+
+				// In the last place add " and "
+			} else if (i == backpack.size()) {
+				farnsworth.say(" and ");
+			}
 		}
 	}
-	
+
 	/**
 	 * Add new item to the users backpack
 	 * 
 	 * @param item
-	 * @return true on success else false
+	 * @return true if user can use item now, otherwise false
 	 */
-	public boolean add(Item item){
-		if(backpack.size() < BACKPACK_SIZE){
+	public boolean add(Item item) {
+		if (backpack.size() < BACKPACK_SIZE) {
+			if(get(item.getName()) != null){
+				farnsworth.say(Narrator.ITEM_DUPLICATE, item.getName());
+				return true;
+			}
 			backpack.put(item.getName(), item);
+			farnsworth.say(Narrator.ITEM_RETRIEVED, item.getName());
 			return true;
 		}
-		
-		//TODO explain backpack is full
-		return false;	
+		farnsworth.say(Narrator.BACKPACK_FULL, item.getName());
+		return false;
 	}
-	
+
 	/**
 	 * Remove an item with itemName from the users backpack
 	 * 
@@ -90,41 +86,47 @@ public class Player {
 	 * @return Item which was removed else null
 	 */
 	public Item drop(String itemName) {
-		if(backpack.containsKey(itemName)){
+		if (backpack.containsKey(itemName)) {
 			Item tempItem = backpack.get(itemName);
 			backpack.remove(itemName);
-			//TODO say it is dropped
+			// TODO say it is dropped
 			return tempItem;
 		}
-		//TODO say nothing to drop
+		// TODO say nothing to drop
 		return null;
 	}
-	
-	public void use(String itemName){
+
+	public void use(String itemName) {
 		Item item = get(itemName);
-		if(item != null){
+		if (item != null) {
 			item.use();
 		} else {
-			//TODO emit player does not own.
+			farnsworth.say(Narrator.ITEM_NOT_IN_BACKPACK, itemName);
 		}
-	}
-	
-	public void use(String itemName, String argument){
-		Item item = get(itemName);
-		if(item != null){
-			item.use(argument);
-		} else {
-			//TODO emit player does not own.
-		}
-	}
-	
-	public int fight(String itemName){
-		return backpack.get(itemName).fight();
 	}
 
-	public int fight(){
-		//Fight using the players "fists"
-		Item fists = new Fists("fists", new int[] {0, 5, 5, 5, 8, 8, 15});
+	public void use(String itemName, String argument) {
+		Item item = get(itemName);
+		if (item != null) {
+			item.use(argument);
+		} else {
+			farnsworth.say(Narrator.ITEM_NOT_IN_BACKPACK, itemName);
+		}
+	}
+
+	public int fight(String itemName) {
+		Item currItem = backpack.get(itemName);
+		if(currItem != null){
+			return currItem.fight();
+		}
+		
+		//If the item does not exist fight with the fists
+		return fight();
+	}
+
+	public int fight() {
+		// Fight using the players "fists"
+		Item fists = new Fists();
 		return fists.fight();
 	}
 
@@ -133,54 +135,19 @@ public class Player {
 	 * 
 	 * @param direction
 	 * @return boolean
+	 * @throws Exception 
 	 */
-	public boolean move(String direction) {
-		switch (direction) // arguments[0] is the command by the user
-		{
-
-		case "north":
-		case "noord":
-		case "n":
-			if (curRoom.hasExit(Main.NORTH)) {
-				setCurRoom(curRoom.getAdjacentRoom(Main.NORTH));
-				//TODO narrate
-				return true;
-			}
-			break;
-
-		case "east":
-		case "oost":
-		case "e":
-			if (curRoom.hasExit(Main.EAST)) {
-				setCurRoom(curRoom.getAdjacentRoom(Main.EAST));
-				return true;
-			}
-			break;
-
-		case "south":
-		case "zuid":
-		case "s":
-			if (curRoom.hasExit(Main.SOUTH)) {
-				setCurRoom(curRoom.getAdjacentRoom(Main.SOUTH));
-				return true;
-			}
-			break;
-
-		case "west":
-		case "w":
-			if (curRoom.hasExit(Main.WEST)) {
-				setCurRoom(curRoom.getAdjacentRoom(Main.WEST));
-				return true;
-			}
-			break;
-
+	public void move(int direction) {
+		
+		//double check that there is a room there.
+		if (currRoom.hasExit(direction)) {
+			setCurrRoom(currRoom.getAdjacentRoom(direction));
 		}
-		return false;
 	}
 
-	public Room getCurRoom() {
-		return curRoom;
-		
+	public Room getCurrRoom() {
+		return currRoom;
+
 	}
 
 	/**
@@ -188,30 +155,37 @@ public class Player {
 	 * 
 	 * @param newRoom
 	 */
-	public void setCurRoom(Room curRoom) {
-		this.curRoom = curRoom;
+	public void setCurrRoom(Room curRoom) {
+		this.currRoom = curRoom;
 
 		// return the entryText for the new room so it can be spoken
 		curRoom.sayEntryText();
 	}
-	
-	public static class Fists extends Item{
-		public Fists(String name, int[] damageMap) {
-			super(name, damageMap);
+
+	public void setHealth(int health) {
+		if (health > 100) {
+			health = 100;
 		}
-		
-		public static final String[] FIGHT_USING_ITEM_HIGH_LOW = {
-			"Did you even hit? Well don't expect that your fists do all the work!",
-			"Well, you might have made a tiny mark there with your fists",
-			"Like a feather bag to the knee, only %d%% amount of damage.",
-			"%d%% damage, your opponent has an itch."
-		};
-		
-		public static final String[] FIGHT_USING_ITEM_HIGH_NONE = {
-			"Miss!!",
-			"Are you even trying? No success",
-			"Where did you learn how to fight?"
-		};
-		
+		this.health = health;
+	}
+	
+	/*
+	 * Empty the players backpack
+	 * 
+	 */
+	public void emptyBackpack(){
+		backpack.clear();
+	}
+
+	public void damage(int diff){
+		health = health - diff;
+	}
+	
+	/**
+	 * 
+	 * @return true if Player is alive else false
+	 */
+	public boolean isAlive(){
+		return health > 0;
 	}
 }

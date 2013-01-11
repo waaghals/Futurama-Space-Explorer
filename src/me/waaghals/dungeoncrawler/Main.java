@@ -1,6 +1,6 @@
 package me.waaghals.dungeoncrawler;
 
-import java.util.logging.Logger;
+import javax.swing.JFrame;
 
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
@@ -9,11 +9,12 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.*;
 
-
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.graph.Graph;
 
 import edu.uci.ics.jung.graph.UndirectedSparseMultigraph;
-import edu.uci.ics.jung.graph.util.EdgeType;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+
 
 /**
  * @author Patrick Berenschot
@@ -21,16 +22,13 @@ import edu.uci.ics.jung.graph.util.EdgeType;
  */
 public class Main {
 
-	public static final int NORTH 	= 2;
-	public static final int EAST 	= 4;
-	public static final int SOUTH 	= 8;
-	public static final int WEST 	= 16;
+	
 	
 	/**
 	 * @param args
 	 */
 	
-	public static void main (String [] args) {
+	public static void main2 (String [] args) {
 		Display display = new Display ();
 		final Shell shell = new Shell (display);
 		shell.setText("Shell");
@@ -106,7 +104,8 @@ public class Main {
 		}
 		display.dispose ();
 	}
-	public static void mai
+	
+	public static void main1
 	(String[] args) {
 		// TODO Auto-generated method stub
 		// Graph<V, E> where V is the type of the vertices
@@ -222,8 +221,12 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
+		
 	}
-
+	
+	public static void main(String[] args){
+		Game game = Game.getInstance();
+	}
 }
 
 
