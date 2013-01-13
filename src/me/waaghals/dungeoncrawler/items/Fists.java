@@ -1,5 +1,10 @@
 package me.waaghals.dungeoncrawler.items;
 
+
+/**
+ * @author Patrick Berenschot
+ * 
+ */
 public class Fists extends Item{
 	public Fists(){
 		super("fists");

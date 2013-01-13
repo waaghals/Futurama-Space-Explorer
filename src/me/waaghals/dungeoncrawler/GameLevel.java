@@ -1,20 +1,29 @@
 package me.waaghals.dungeoncrawler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.uci.ics.jung.algorithms.shortestpath.ShortestPathUtils;
 import edu.uci.ics.jung.algorithms.shortestpath.UnweightedShortestPath;
 import edu.uci.ics.jung.graph.Graph;
 
+/**
+ * @author Patrick Berenschot
+ * 
+ */
 public class GameLevel {
 
 	private Graph<Room, Path> map;
 	private StringBuilder stats = new StringBuilder();
 	private int level = 1;
-	private Enemy[] enemies;
+	private List<Enemy> enemies = new ArrayList<Enemy>();
 	
 	public GameLevel(Graph<Room, Path> map){
 		this.map = map;
+	}
+	
+	public int getLevel(){
+		return level;
 	}
 	
 	public Room getRandomRoom() {
@@ -57,14 +66,21 @@ public class GameLevel {
 	public Room getNextRoomTowardsDest(Room startRoom, Room destRoom){
 		//Shortest Path algorithm
 		UnweightedShortestPath<Room, Path> path = new UnweightedShortestPath<Room, Path>(map);
+
 		
 		//Util returns a list of paths to the dest, firstPath is the first path we should take
 		List<Path> route = ShortestPathUtils.getPath(map, path, startRoom, destRoom);
+		
 		Path firstPath = route.get(0);
-		return map.getDest(firstPath);
+
+		return map.getOpposite(startRoom, firstPath);
 	}
 	
-	public Enemy[] getEnemies(){
+	public List<Enemy> getEnemies(){
 		return enemies;
+	}
+	
+	public void addEnemies(Enemy enemy){
+		enemies.add(enemy);
 	}
 }

@@ -1,7 +1,10 @@
 package me.waaghals.dungeoncrawler.items;
 
-import me.waaghals.dungeoncrawler.Narrator;
 
+/**
+ * @author Patrick Berenschot
+ * 
+ */
 public class Stick extends Item {
 	
 	public Stick() {

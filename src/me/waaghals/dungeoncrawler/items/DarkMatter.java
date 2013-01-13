@@ -2,6 +2,10 @@ package me.waaghals.dungeoncrawler.items;
 
 import me.waaghals.dungeoncrawler.Game;
 
+/**
+ * @author Patrick Berenschot
+ * 
+ */
 public class DarkMatter extends Item {
 
 	public DarkMatter() {
@@ -10,11 +14,13 @@ public class DarkMatter extends Item {
 	}
 
 	public void use() {
+		Game currGame = Game.INSTANCE;
 		//Is the player back where he started?
-		
-		//WHY ON EARTH DOESN'T THIS WORK TODO fix this
-		if(Game.getInstance().isHome()){
+		if(currGame.isHome()){
 			farnsworth.say("Game complete!");
+			currGame.levelUp();
+		} else {
+			farnsworth.say("You can't do that here. We need to be back at the spaceship.");
 		}
 	}
 	

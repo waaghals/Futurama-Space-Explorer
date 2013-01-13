@@ -5,6 +5,10 @@ import me.waaghals.dungeoncrawler.Path;
 
 import org.apache.commons.collections15.Factory;
 
+/**
+ * @author Patrick Berenschot
+ * 
+ */
 class EdgeFactory implements Factory<Path> {
 	int i = 0;
 	public Path create() {

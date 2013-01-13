@@ -1,9 +1,6 @@
 package me.waaghals.dungeoncrawler;
 
 import java.util.Random;
-import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 
 /**
  * @author Patrick Berenschot
@@ -148,6 +145,18 @@ public class Narrator {
 		"There is no enemy here",
 		"No enemy in this room",
 		"Can't find any opponents here"
+	};
+	
+	public static final String[] GAME_OVER = {
+		"GAME OVER! Highest level %d",
+		"You've lost. You've made it until level %d",
+		"You've died. Game over. Can you can go higher than %d next time?"
+	};
+	
+	public static final String[] SEE_YOU_SOON = {
+		"Wanna try and beat your last level?",
+		"New game?",
+		"Wan't to try again?"
 	};
 	
 	public static final String GAME_INTRO = new StringBuilder()

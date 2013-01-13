@@ -1,6 +1,5 @@
 package me.waaghals.dungeoncrawler.items;
 
-import java.util.Random;
 import me.waaghals.dungeoncrawler.*;
 
 /**
@@ -57,7 +56,7 @@ public abstract class Item {
 	
 	
 	public Item(String name){
-		this.name = name;
+		this.name = name.toLowerCase();
 		this.fancyName = name;
 	}
 

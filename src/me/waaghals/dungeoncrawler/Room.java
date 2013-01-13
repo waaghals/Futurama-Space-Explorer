@@ -1,9 +1,6 @@
 package me.waaghals.dungeoncrawler;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-
 import me.waaghals.dungeoncrawler.items.Item;
 
 /**
@@ -48,9 +45,9 @@ public class Room {
 	}
 
 	public void sayEntryText() {
-		int index = roomId % ROOM_DESC.length;
-		String[] roomText = ROOM_DESC;
-		farnsworth.say(roomText[index]);
+		int index = roomId % ROOM_LOCATIONS.length;
+		String[] roomText = ROOM_LOCATIONS;
+		farnsworth.say(ROOM_DESC, roomText[index]);
 	}
 
 	/**
@@ -102,22 +99,20 @@ public class Room {
 		return null;
 	}
 
-	public static final String[] ROOM_DESC = {
-			"We are in a dark and damp envirement. Surrounded by bats, We've reached a cave!",
-			"A lot of trees! This must be a forest I guess...",
-			"Knee deep in the grass, soggy ground, lets hope we don't find any alligators in this swamp.",
-			"Hill, hill, and more hills. I feel like singing Do-Re-Mi!"
-	// TODO add more rooms
-	};
+	public static final String[] ROOM_DESC = { "This is a %s.",
+			"We are in a %s", "We reached a %s" };
+
+	public static final String[] ROOM_LOCATIONS = { "cave.", "forest", "swamp",
+			"desert", "place with a lot of hills", "deserted village", "valley" };
 
 	public void sayPosibleDirections() {
 		int i = 0;
 		// For each key in the exits Hashmap
 		for (Integer intDirection : exits.keySet()) {
 			String stringDirection = Constants.getStringDirection(intDirection);
-			
+
 			farnsworth.say(Narrator.DIRECTIONS, stringDirection);
-			//TODO make this work
+			// TODO make this work
 			// Add a comma between sentences
 			if (i > 0 && i < exits.size()) {
 				farnsworth.say(", ");
@@ -129,10 +124,10 @@ public class Room {
 		}
 
 	}
-	
+
 	public void sayItems() {
 		for (String itemName : items.keySet()) {
-			farnsworth.say(Narrator.ITEMS_IN_ROOM, itemName);	
+			farnsworth.say(Narrator.ITEMS_IN_ROOM, itemName);
 		}
 
 	}

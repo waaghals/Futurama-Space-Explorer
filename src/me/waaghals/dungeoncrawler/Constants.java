@@ -1,7 +1,11 @@
 package me.waaghals.dungeoncrawler;
 
 import java.util.Random;
-
+/**
+ * 
+ * @author Patrick Berenschot
+ *
+ */
 public class Constants {
 	public static final int NORTH 	= 2;
 	public static final int EAST 	= 4;

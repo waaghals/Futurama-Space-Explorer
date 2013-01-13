@@ -1,8 +1,9 @@
 package me.waaghals.dungeoncrawler.items;
 
-import me.waaghals.dungeoncrawler.Game;
-import me.waaghals.dungeoncrawler.Narrator;
-
+/**
+ * @author Patrick Berenschot
+ * 
+ */
 public class PlanetaryAnnihilator extends Item {
 
 	public PlanetaryAnnihilator() {
@@ -12,7 +13,7 @@ public class PlanetaryAnnihilator extends Item {
 	}
 	
 	public void use() {
-		farnsworth.say("Angirly pointing the %s", getFancyName());
+		farnsworth.say("Pointing the %s at the stars", getFancyName());
 	}
 	
 	public void use(String something){

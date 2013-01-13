@@ -1,6 +1,5 @@
 package me.waaghals.dungeoncrawler.factory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,9 +8,7 @@ import java.util.Set;
 import org.apache.commons.collections15.Factory;
 import edu.uci.ics.jung.algorithms.generators.random.EppsteinPowerLawGenerator;
 import edu.uci.ics.jung.graph.*;
-
 import me.waaghals.dungeoncrawler.*;
-import me.waaghals.dungeoncrawler.items.*;
 
 
 /**
@@ -27,20 +24,9 @@ public class GameLevelFactory implements Factory<GameLevel>{
 	//private ArrayList<Room> map;
 	public Graph<Room, Path> levelMap = new UndirectedSparseGraph<Room, Path>();
 	private int level;
-	private ArrayList<Item> items = new ArrayList<Item>();
-	
+
 	public GameLevelFactory(int level) {
 		this.level = level;
-		initItems();
-	}
-
-	private void initItems() {
-		
-		//Create a set of items for in the rooms
-		items.add(new Ipod());
-		items.add(new Stick());
-		items.add(new Medicine());
-		items.add(new PlanetaryAnnihilator());
 	}
 
 	/**
@@ -56,33 +42,27 @@ public class GameLevelFactory implements Factory<GameLevel>{
 	 */
 	public GameLevel create(){
 		GameLevel currLevel = new GameLevel(getGraph());
-		
+		ItemFactory itemFactory = new ItemFactory();
 		for (int i = 0; i < numItems(); i++) {
 			Room room = currLevel.getRandomRoom();
-			room.addItem(nextItem());
+			room.addItem(itemFactory.create());
+		}
+		
+		EnemyFactory enemyFactory = new EnemyFactory();
+		for (int i = 0; i < numEnemies(); i++) {
+			Enemy newEnemy = enemyFactory.create();
+			currLevel.addEnemies(newEnemy);
+			newEnemy.setRoom(currLevel.getRandomRoom());
 		}
 		
 		currLevel.addStat("Num Items: \t" + numItems() + "\n");
 		currLevel.addStat("Num Rooms: \t" + currLevel.getMap().getVertexCount() + "\n");
 		currLevel.addStat("Num Enemies: \t" + numEnemies() + "\n");
 		currLevel.addStat("Num Paths: \t" + currLevel.getMap().getEdgeCount() + "\n");
+		currLevel.addStat("currLevel: \t" + level + "\n");
 		currLevel.setLevel(level);
 		
 		return currLevel;
-	}
-	
-	private Item nextItem() {
-		int i = 0;
-		int size = items.size();
-		
-		if(size == 0){
-			return null;
-		}
-		
-		while(i < numItems()){
-			return items.get(i%size);
-		}
-		return null;
 	}
 
 	private int[] getRandomDirections(int amount) {
@@ -110,7 +90,7 @@ public class GameLevelFactory implements Factory<GameLevel>{
 			// No need to do the math, f(1) = 10
 			return 10;
 		}
-		return (int) Math.round((Math.pow((level - 1), 2) * 3 + 10));
+		return 9 + (level * 3);
 	}
 
 	/**
@@ -124,7 +104,7 @@ public class GameLevelFactory implements Factory<GameLevel>{
 	}
 
 	/**
-	 * The number of Items in the level. A level has half the items of numRooms
+	 * The number of Items in the level. A level has less than half the items of numRooms
 	 * 
 	 * @param level
 	 * @return numRooms / 2.5
@@ -160,30 +140,10 @@ public class GameLevelFactory implements Factory<GameLevel>{
 
 		//Nominate all Edges which are in the same direction
 		for (Room v : g.getVertices()) {
-			/*
-			Collection<Path> allEdges = g.getOutEdges(v);	//All the out going paths
-			Set<Path> testedEdges = new HashSet<Path>();  //After each check put the direction in here.
-			
-			for (Iterator<Path> iterator = allEdges.iterator(); iterator.hasNext();) {
-				
-				Path direction = (Path) iterator.next();
-				
-				//If the direction already exists nominate it for removing else add to the testedEdges
-				if(testedEdges.contains(direction)){
-					removeEdge.add(direction);
-					g.removeEdge(direction);
-					System.out.println("Found an duplicate edge");
-				} else {
-					testedEdges.add(direction);
-				}
-				
-			}
-			*/
-			//Also nominate all edges which point to there self.
+			//Nominate all edges which point to there self.
 			Path selfRef = g.findEdge(v, v);
 			//If there is a connection
 			if(selfRef != null){
-				//removeEdge.add(selfRef);
 				g.removeEdge(selfRef);
 			}
 		}

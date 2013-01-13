@@ -3,21 +3,21 @@ package me.waaghals.dungeoncrawler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
+import java.util.List;
 import javax.swing.JFrame;
-
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import me.waaghals.dungeoncrawler.factory.GameLevelFactory;
 import me.waaghals.dungeoncrawler.items.*;
+import me.waaghals.dungeoncrawler.transformers.RoomPainter;
 
 /**
  * @author Patrick Berenschot
  * 
  */
-public class Game {
-	private static Game instance;
+public enum Game {
+	INSTANCE;
 	private Player player;
 	private Narrator farnsworth = Narrator.getInstance();
 	private InputStreamReader istream = new InputStreamReader(System.in);
@@ -30,15 +30,13 @@ public class Game {
 	}
 
 	/**
-	 * @param none
-	 * 
-	 * 
+	 * Start a new game, starting at level 1 Show the intro
 	 */
-	private Game() {
+	public void start() {
 
 		player = new Player();
 		// Create the level and add them to the room
-		currLevel = new GameLevelFactory(3).create();
+		currLevel = new GameLevelFactory(5).create();
 		startRoom = currLevel.getRandomRoom();
 
 		intro();
@@ -51,11 +49,16 @@ public class Game {
 		try {
 			Thread.sleep(time);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Remove the stuff from the console
+	 * 
+	 * @param slow
+	 *            if true only cleans 23 rows, and does it slowly, for title
+	 */
 	private void cleanScreen(boolean slow) {
 		if (slow) {
 			for (int i = 0; i < 23; i++) {
@@ -68,6 +71,10 @@ public class Game {
 		}
 	}
 
+	/**
+	 * Show the intro sequence
+	 * 
+	 */
 	private void intro() {
 		farnsworth.say(Narrator.IMAGE_LOGO);
 		sleep(1000);
@@ -89,22 +96,23 @@ public class Game {
 		player.setCurrRoom(startRoom);
 	}
 
-	public static Game getInstance() {
-		if (instance == null)
-			// Call the its own constructor, which it can only do itself.
-			instance = new Game();
-		return instance;
-	}
-
+	/**
+	 * Go to the next level and start that level
+	 * 
+	 */
 	public void levelUp() {
-		// TODO
-		// currLevel
+		int currLevelNr = currLevel.getLevel() + 1;
+		currLevel = new GameLevelFactory(currLevelNr).create();
+		startRoom = currLevel.getRandomRoom();
+
+		player.setCurrRoom(startRoom);
+		player.emptyBackpack();
+		farnsworth.say(Narrator.GAME_INTRO);
 	}
 
 	/**
 	 * Run the game and keep asking for user input
 	 * 
-	 * Run the game
 	 */
 	private void run() {
 		while (true) {
@@ -112,12 +120,32 @@ public class Game {
 			if (!handleCommand(getUserInput())) {
 				// Stop asking for user input
 				break;
+			} else {
+				if (!player.isAlive()) {
+					farnsworth.say(Narrator.GAME_OVER, currLevel.getLevel());
+					break;
+				}
 			}
+		}
+		farnsworth.say(Narrator.SEE_YOU_SOON);
+		switch (getUserInput()) {
+		case "yes":
+		case "y":
+		case "ja":
+		case "j":
+
+			// Start a new game
+			Game.INSTANCE.start();
+			break;
+
+		default:
+			System.exit(0);
+			break;
 		}
 	}
 
 	/**
-	 * 
+	 * Is the player in the same room he started in
 	 * 
 	 * @return true if the player is back in the room he started in.
 	 */
@@ -125,24 +153,28 @@ public class Game {
 		return player.getCurrRoom() == startRoom;
 	}
 
+	/**
+	 * Get the user input from the console
+	 * 
+	 * @return String the users input
+	 */
 	private String getUserInput() {
 		try {
 			return bufRead.readLine();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
 
 	/**
-	 * Preform a step for each enemy, each enemy dicides for its own if it
+	 * Perform a step for each enemy, each enemy decides for its own if it
 	 * should move, attack or do nothing.
 	 */
 	private void stepEnemies() {
-		Enemy[] enemies = currLevel.getEnemies();
+		List<Enemy> enemies = currLevel.getEnemies();
 		if (enemies != null) {
-			for (Enemy enemy : currLevel.getEnemies()) {
+			for (Enemy enemy : enemies) {
 				enemy.step();
 			}
 		}
@@ -155,10 +187,10 @@ public class Game {
 	 * @return false if user typed quit else true
 	 */
 	private boolean handleCommand(String userInput) {
+		userInput = userInput.toLowerCase();
 		String[] arguments = userInput.split(" ");
 
 		// With each command move the enemy closer to the player
-		// TODO cleanup argument checking
 		switch (arguments[0].toLowerCase()) // arguments[0] is the command by
 											// the user
 		{
@@ -241,12 +273,14 @@ public class Game {
 
 		case "map":
 
-			// Sadly no SWT for JUNG
+			// Show a window with the current map
 			JFrame jf = new JFrame();
 			Graph<Room, Path> g = currLevel.getMap();
-			System.out.println(g);
 			VisualizationViewer<Room, Path> vv = new VisualizationViewer<Room, Path>(
 					new CircleLayout<Room, Path>(g));
+			vv.getRenderContext().setVertexFillPaintTransformer(
+					new RoomPainter<Room>());
+
 			jf.getContentPane().add(vv);
 			// jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			jf.pack();
@@ -276,7 +310,6 @@ public class Game {
 			try {
 				player.move(intDirection);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
@@ -289,16 +322,9 @@ public class Game {
 		// Cheat!
 		if (itemName.equals("nibler")) {
 			// Add the Dark Matter to the user.
-			// give him the most powerful weapon
-			// and give him an ipod :)
-
-			// First make sure there is enough room
-			player.emptyBackpack();
 
 			// Add stuff
-			player.add(new Ipod());
 			player.add(new DarkMatter());
-			player.add(new PlanetaryAnnihilator());
 			farnsworth
 					.say("Cheaters!\n:( \n\nI don't wan't to live on this planet anymore");
 		} else {
@@ -357,7 +383,7 @@ public class Game {
 
 	private void handleFightCommand(String withItemName) {
 		int i = 0;
-		Enemy[] fromLevel = currLevel.getEnemies();
+		List<Enemy> fromLevel = currLevel.getEnemies();
 		if (fromLevel != null) {
 			for (Enemy enemy : fromLevel) {
 				// If there are more enemies in the same room, also fight them.
@@ -380,7 +406,7 @@ public class Game {
 
 	private void handleLootCommand() {
 		int i = 0;
-		Enemy[] fromLevel = currLevel.getEnemies();
+		List<Enemy> fromLevel = currLevel.getEnemies();
 		if (fromLevel != null) {
 			for (Enemy enemy : fromLevel) {
 				// If there are more enemies in the same room, also fight them.
@@ -396,7 +422,7 @@ public class Game {
 			}
 		}
 
-		// Where there dead enemies in the room?
+		// Are there dead enemies in the room?
 		if (i == 0) {
 			farnsworth.say(Narrator.NO_ENEMY);
 		}

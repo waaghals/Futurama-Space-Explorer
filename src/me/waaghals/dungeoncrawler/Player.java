@@ -1,8 +1,6 @@
 package me.waaghals.dungeoncrawler;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map.Entry;
 
 import me.waaghals.dungeoncrawler.items.Fists;
@@ -47,7 +45,7 @@ public class Player {
 		for (Entry<String, Item> item : backpack.entrySet()) {
 			// item key is the itemName
 			farnsworth.say(Narrator.BACKPACK_CONTENT, item.getKey());
-
+			//TODO fix this
 			// Add a comma between sentences
 			if (i > 0 && i < backpack.size()) {
 				farnsworth.say(", ");
@@ -89,10 +87,8 @@ public class Player {
 		if (backpack.containsKey(itemName)) {
 			Item tempItem = backpack.get(itemName);
 			backpack.remove(itemName);
-			// TODO say it is dropped
 			return tempItem;
 		}
-		// TODO say nothing to drop
 		return null;
 	}
 
@@ -188,4 +184,5 @@ public class Player {
 	public boolean isAlive(){
 		return health > 0;
 	}
+	
 }

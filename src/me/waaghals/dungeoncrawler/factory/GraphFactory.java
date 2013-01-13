@@ -9,6 +9,10 @@ import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedGraph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 
+/**
+ * @author Patrick Berenschot
+ * 
+ */
 class GraphFactory implements Factory<Graph<Room, Path>> {
 	public UndirectedGraph<Room, Path> create() {
 		return new UndirectedSparseGraph<Room, Path>();
