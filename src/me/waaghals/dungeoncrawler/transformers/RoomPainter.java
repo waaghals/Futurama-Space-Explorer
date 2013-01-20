@@ -38,7 +38,7 @@ public class RoomPainter<Room> implements Transformer<Room,Paint> {
 				if (room == enemy.getCurrRoom()) {
 					if (enemy.isAlive()) {
 						System.out.println(room + " =? " + enemy.getCurrRoom());
-						return Color.MAGENTA;
+						return Color.RED;
 					}
 				}
 			}

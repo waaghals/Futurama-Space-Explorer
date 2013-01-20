@@ -7,6 +7,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
+import me.waaghals.dungeoncrawler.Narrator;
 /**
  * Ipod is an special item
  * It can play sound and can kill an enemy in an instant although highly unlikely
@@ -19,7 +21,7 @@ public class Ipod extends Item {
 
 	public Ipod() {
 		super("ipod");
-		super.setDamageMap(new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100});
+		super.setDamageMap(new int[] {0, 0, 0, 0, 0, 0, 100});
 	}
 
 	public void use() {
@@ -30,7 +32,7 @@ public class Ipod extends Item {
 				AudioInputStream ais = AudioSystem.
 				    getAudioInputStream( wav );
 				clip.open(ais);
-				farnsworth.say("Pressing play on the %s.", getFancyName());
+				Narrator.say("Pressing play on the %s.", getFancyName());
 				clip.start();
 			} catch (LineUnavailableException e) {
 				e.printStackTrace();
@@ -42,22 +44,6 @@ public class Ipod extends Item {
 	}
 	
 	public void use(String something){
-		farnsworth.say("Can't use %s on %s", getFancyName(), something);
+		Narrator.say("Can't use %s on %s", getFancyName(), something);
 	}
-	
-	public int fight(){
-		int damage = getDamage();
-		if(damage > 90){
-			farnsworth.say(Ipod.FIGHT_USING_ITEM_HIGH_DAMAGE, getName(), damage);
-		} else if(damage > 60){
-			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_MEDIUM, getName(), damage);
-		} else if(damage > 30){
-			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_LOW, getName(), damage);
-		} else if(damage == 0){
-			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_NONE, getName(), damage);
-		}
-		return damage;
-	}
-	
-	public static final String FIGHT_USING_ITEM_HIGH_DAMAGE = "You've strangled your opponent with the ipod cord. He is dead for sure...";
 }

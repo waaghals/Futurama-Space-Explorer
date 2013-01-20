@@ -1,5 +1,7 @@
 package me.waaghals.dungeoncrawler.items;
 
+import me.waaghals.dungeoncrawler.Narrator;
+
 
 /**
  * @author Patrick Berenschot
@@ -14,10 +16,10 @@ public class Stick extends Item {
 	}
 
 	public void use() {
-		farnsworth.say("Dancing like a girl with a twirling stick!");
+		Narrator.say("Dancing like a girl with a twirling stick!");
 	}
 	
 	public void use(String something){
-		farnsworth.say("Can't use %s on %s", getFancyName(), something);
+		Narrator.say("Can't use %s on %s", getFancyName(), something);
 	}
 }

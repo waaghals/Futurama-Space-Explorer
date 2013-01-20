@@ -1,5 +1,7 @@
 package me.waaghals.dungeoncrawler.items;
 
+import me.waaghals.dungeoncrawler.Narrator;
+
 /**
  * @author Patrick Berenschot
  * 
@@ -13,11 +15,11 @@ public class PlanetaryAnnihilator extends Item {
 	}
 	
 	public void use() {
-		farnsworth.say("Pointing the %s at the stars", getFancyName());
+		Narrator.say("Pointing the %s at the stars", getFancyName());
 	}
 	
 	public void use(String something){
-		farnsworth.say("Can't use %s on %s", getFancyName(), something);
+		Narrator.say("Can't use %s on %s", getFancyName(), something);
 	}
 
 }

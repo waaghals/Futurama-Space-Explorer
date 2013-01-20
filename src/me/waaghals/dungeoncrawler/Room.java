@@ -1,6 +1,10 @@
 package me.waaghals.dungeoncrawler;
 
 import java.util.HashMap;
+
+import org.apache.commons.collections15.BidiMap;
+import org.apache.commons.collections15.bidimap.DualHashBidiMap;
+
 import me.waaghals.dungeoncrawler.items.Item;
 
 /**
@@ -9,15 +13,16 @@ import me.waaghals.dungeoncrawler.items.Item;
  */
 public class Room {
 
-	private HashMap<Integer, Room> exits = new HashMap<Integer, Room>();
+	private BidiMap<Integer, Room> exits = new DualHashBidiMap<Integer, Room>();
 	private HashMap<String, Item> items = new HashMap<String, Item>();
-	private Narrator farnsworth = Narrator.getInstance();
 	private int roomId; // Used in LevelFactory so that rooms can be kept apart.
 
 	public String toString() {
+		return roomId + "";
+		/*
 		int index = roomId % ROOM_LOCATIONS.length;
 		String[] roomText = ROOM_LOCATIONS;
-		return roomText[index];
+		return roomText[index];*/
 	}
 
 	public void setRoomId(int id) {
@@ -49,7 +54,10 @@ public class Room {
 	public void sayEntryText() {
 		int index = roomId % ROOM_LOCATIONS.length;
 		String[] roomText = ROOM_LOCATIONS;
-		farnsworth.say(ROOM_DESC, roomText[index]);
+		Narrator.say(ROOM_DESC, roomText[index]);
+		if(Game.INSTANCE.getStartRoom() == this){
+			Narrator.say("We are in the same room we started in");
+		}
 	}
 
 	/**
@@ -108,20 +116,34 @@ public class Room {
 			"desert", "place with a lot of hills", "deserted village", "valley" };
 
 	public void sayPosibleDirections() {
-		int i = 0;
 		// For each key in the exits Hashmap
 		for (Integer intDirection : exits.keySet()) {
 			String stringDirection = Constants.getStringDirection(intDirection);
 
-			farnsworth.say(Narrator.DIRECTIONS, stringDirection);
+			Narrator.say(Narrator.DIRECTIONS, stringDirection);
 		}
 
 	}
 
 	public void sayItems() {
 		for (String itemName : items.keySet()) {
-			farnsworth.say(Narrator.ITEMS_IN_ROOM, itemName);
+			Narrator.say(Narrator.ITEMS_IN_ROOM, itemName);
 		}
 
+	}
+
+	public int getRoomId() {
+		return roomId;
+	}
+	
+	public int getDirectionByNeighbour(Room neighbour){
+		if(exits.containsValue(neighbour)){
+			return exits.getKey(neighbour);
+		}
+		return 0;
+	}
+	
+	public int numItems(){
+		return items.size();
 	}
 }

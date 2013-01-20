@@ -4,11 +4,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import org.apache.commons.collections15.Factory;
 import edu.uci.ics.jung.algorithms.generators.random.EppsteinPowerLawGenerator;
+import edu.uci.ics.jung.algorithms.transformation.DirectionTransformer;
 import edu.uci.ics.jung.graph.*;
+import edu.uci.ics.jung.graph.util.Pair;
 import me.waaghals.dungeoncrawler.*;
+import me.waaghals.dungeoncrawler.items.DarkMatter;
 
 
 /**
@@ -47,6 +51,8 @@ public class GameLevelFactory implements Factory<GameLevel>{
 			Room room = currLevel.getRandomRoom();
 			room.addItem(itemFactory.create());
 		}
+		//Make sure we add fuel to the level
+		currLevel.getRandomRoom().addItem(new DarkMatter());
 		
 		EnemyFactory enemyFactory = new EnemyFactory();
 		for (int i = 0; i < numEnemies(); i++) {
@@ -133,7 +139,7 @@ public class GameLevelFactory implements Factory<GameLevel>{
 		Graph<Room, Path> g = new EppsteinPowerLawGenerator<Room, Path>(
 				new GraphFactory(), new VertexFactory(), new EdgeFactory(),
 				numRooms(), numPaths(), 1 ).create();
-
+		
 		// Nominees Sets
 		Set<Room> removeVertex = new HashSet<Room>();
 		Set<Path> removeEdge = new HashSet<Path>();
@@ -144,6 +150,7 @@ public class GameLevelFactory implements Factory<GameLevel>{
 			Path selfRef = g.findEdge(v, v);
 			//If there is a connection
 			if(selfRef != null){
+				System.out.println("Found an selfRef");
 				g.removeEdge(selfRef);
 			}
 		}
@@ -157,16 +164,18 @@ public class GameLevelFactory implements Factory<GameLevel>{
 
 		// Nominate all Vertices with more than 4 edges.
 		for (Room v : g.getVertices()) {
-			//Get all outgoing edges from Room v
-
-			Collection<Path> edges = g.getInEdges(v);
+			//Get all edges from Room v
+			Collection<Path> edges = g.getIncidentEdges(v);
 
 			int i = edges.size();
+			Iterator<Path> it = edges.iterator();
 			//System.out.println("Number of edges for Room " + v + " = " + i);
 			while (i > Constants.directions.length) {
-				//System.out.println("Found an vertex with to many edges");
-				Path e = edges.iterator().next();
-				g.removeEdge(e);
+				int diff = i - Constants.directions.length;
+				//System.out.println("To many edges, nominated " + diff + "e edges for removal");
+				Path e = it.next();
+				//g.removeEdge(e);
+				removeEdge.add(e);
 				i--;
 			}
 		}
@@ -189,30 +198,53 @@ public class GameLevelFactory implements Factory<GameLevel>{
 		for (Room v : removeVertex) {
 			g.removeVertex(v);
 		}
+
+		/*Set<Path> duplicateEdges = new HashSet<Path>();
+		for(Path e : g.getEdges()){
+			duplicateEdges.add(e);
+		}
+	
+		for (Path e : duplicateEdges) {
+			Room source = g.getSource(e);
+			Room dest = g.getDest(e);
+			
+			Path newPath = new EdgeFactory().create();
+			newPath.setId(e.getId() * 2);			
+			g.addEdge(newPath, dest, source);
+		}*/
+		
+/*		for(Path e: g.getEdges()){
+			Room source = g.getSource(e);
+			Room dest = g.getDest(e);
+			int pathIdentifier = Math.abs(source.getRoomId() - dest.getRoomId());
+			
+			//int mod = e.getId()%Constants.directions.length;
+			//int roomMod = source.getRoomId()%Constants.directions.length;
+			pathIdentifier = pathIdentifier%4;
+			e.setDirection(Constants.directions[pathIdentifier]);
+		}*/
 		
 		//Connect all the path to a random direction
 		for(Room currRoom : g.getVertices()){
 			Collection<Path> paths = g.getIncidentEdges(currRoom);
-			
+			//System.out.println("Room " +  currRoom + " has " + paths.size() + " edges");
 			//Get paths.size() amount of random direction, all unique because there can't be two path east for example
 			int[] directions = getRandomDirections(paths.size());
 			int index = 0;
-			for (Path edge : g.getIncidentEdges(currRoom)) {
+			for (Path edge : paths) {
 				
-				//If the first room from the endpoint pair is the same as Room V use second room and vice versa.
-				Room firstRoom = g.getEndpoints(edge).getFirst();
-				Room destRoom = g.getEndpoints(edge).getSecond();
-				if(firstRoom != currRoom){
-					destRoom = firstRoom;
-				}
 				
-				//We don't add the reverse direction to the destRoom, it get it's own direction.
-				//It doesn't matter if both directions are north, there could be a semi circular path.
-				currRoom.addExit(directions[index], destRoom);
+				Pair<Room> endPoints = g.getEndpoints(edge);
+				Room firstRoom = endPoints.getFirst();
+				Room destRoom = endPoints.getSecond();
+				
+				firstRoom.addExit(directions[index], destRoom);
+				int opposite = Constants.getOppositeDirection(directions[index]);
+				destRoom.addExit(opposite, firstRoom);
+				//edge.setDirection(directions[index]);
 				index++;
 			}
 		}
-
 		return g;
 	}
 }

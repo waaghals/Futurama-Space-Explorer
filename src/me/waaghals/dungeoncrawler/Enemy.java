@@ -53,16 +53,20 @@ public class Enemy {
 		if (isAlive()) {
 			// If the enemy is with the player in the same room, no need to move
 			if (playerRoom == currRoom) {
-				// TODO speak
-				player.damage(fight());
+				Narrator.say("There is an enemy with you in the room!");
+				int damage = fight();
+				Narrator.say("The enemy did %d%% of damage on you.", damage);
+				player.damage(damage);
 			} else {
-				// Move the enemy speed rooms
+				// Move the enemy <speed> rooms
 				for (int i = 0; i < speed; i++) {
 					if (playerRoom != currRoom) {
 						GameLevel level = currGame.getGameLevel();
 						Room newRoom = level.getNextRoomTowardsDest(currRoom,
 								playerRoom);
 						currRoom = newRoom;
+					} else {
+						Narrator.say("An enemy has found you! Fight him!");
 					}
 					// If the enemy is in the playerRoom, do nothing. Will fight
 					// the enemy when the users makes the next move

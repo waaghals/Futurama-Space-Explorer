@@ -10,52 +10,21 @@ public abstract class Item {
 
 	private String name;
 	private String fancyName;
-	protected Narrator farnsworth = Narrator.getInstance(); 
+
 	
-	public static final String[] FIGHT_USING_ITEM_HIGH_DAMAGE = {
-		"Fighting using %s! Massive hit. %d%% damage to your opponent!.", //Escape % with a %
-		"BAM! %d%% damage against your opponent.",
-		"Blow to the head, that'll teach 'em!",
-		"KAPOW! You hit like Badr Hari!",
-		"Good job Chris brown! %d%% damage!"
-	};
-	
-	public static final String[] FIGHT_USING_ITEM_HIGH_MEDIUM = {
-		"You inflicted %d%% amount of damage.", 
-		"Contact hit! Did %d%% damage",
-		"HIT! %d%%, opponent says OUCH!"
-	};
-	
-	public static final String[] FIGHT_USING_ITEM_HIGH_LOW = {
-		"Did you even hit? Well don't expect that the %s does all the work!",
-		"Well, you might have made a tiny mark there with a %s",
-		"Like a feather bag to the knee, only %d%% amount of damage.",
-		"%d%% damage, your opponent has an itch."
-	};
-	
-	public static final String[] FIGHT_USING_ITEM_HIGH_NONE = {
-		"Miss!!",
-		"Are you even trying? No success",
-		"Sure you can even use a %s for fighting?"
-	};
-	
+
 	//
-	/*  
-	 * Array for damages, damage get randomly picked from this array. Repeat values more often for "weighted" random.
-	 * Plotted, low to high  (Bear with me xD) 
+	/*
+	 * Array for damages, damage get randomly picked from this array. Repeat
+	 * values more often for "weighted" random. Plotted, low to high (Bear with
+	 * me xD)
 	 * 
-	 *  Exponential      Logaritmic        Liniar
-	 *  |          .     |             .   |             .
-	 *  |         .      |             .   |          .
-	 *  |        .       |            .    |       .
-	 *  |     .          |         .       |    .
-	 *  | .              |....   `         |.
-	 *  +--------------  +---------------  +---------------
+	 * Exponential Logaritmic Liniar | . | . | . | . | . | . | . | . | . | . | .
+	 * | . | . |.... ` |. +-------------- +--------------- +---------------
 	 */
-	private int[] damageMap = new int[] {0};
-	
-	
-	public Item(String name){
+	private int[] damageMap = new int[] { 0 };
+
+	public Item(String name) {
 		this.name = name.toLowerCase();
 		this.fancyName = name;
 	}
@@ -88,36 +57,25 @@ public abstract class Item {
 		this.name = name;
 	}
 
-	public int fight(){
-		int damage = getDamage();
-		if(damage > 90){
-			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_DAMAGE, name, damage);
-		} else if(damage > 60){
-			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_MEDIUM, name, damage);
-		} else if(damage > 30){
-			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_LOW, name, damage);
-		} else if(damage == 0){
-			farnsworth.say(Item.FIGHT_USING_ITEM_HIGH_NONE, name, damage);
-		}
-		return damage;
-	}
-	
-	protected int getDamage(){
-		if(damageMap.length != 0){
-			return  Constants.generator.nextInt(damageMap.length);
+	public int fight() {
+		if (damageMap.length != 0) {
+			int index =  Constants.generator.nextInt(damageMap.length);
+			return damageMap[index];
 		}
 		return 0;
 	}
 
-	//How does one create an interface for an an expendable object?
-	//TODO Make use of interface
+	// How does one create an interface for an an expendable object?
+	// TODO Make use of interface
 	public void use() {
-		throw new UnsupportedOperationException("use() must be overridden by all subclasses of Item");
-		
+		throw new UnsupportedOperationException(
+				"use() must be overridden by all subclasses of Item");
+
 	}
 
 	public void use(String argument) {
-		throw new UnsupportedOperationException("use() must be overridden by all subclasses of Item");
+		throw new UnsupportedOperationException(
+				"use() must be overridden by all subclasses of Item");
 	}
 
 	public void setFancyName(String fancyName) {

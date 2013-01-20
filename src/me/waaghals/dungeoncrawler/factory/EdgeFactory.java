@@ -10,11 +10,9 @@ import org.apache.commons.collections15.Factory;
  * 
  */
 class EdgeFactory implements Factory<Path> {
-	int i = 0;
+	int i = 1;
 	public Path create() {
-		int index = Constants.generator.nextInt(Constants.directions.length);
-		int randomDirection = Constants.directions[index];
-		Path edge = new Path(i++, randomDirection);
+		Path edge = new Path(i++);
 		return edge;
 	}
 }

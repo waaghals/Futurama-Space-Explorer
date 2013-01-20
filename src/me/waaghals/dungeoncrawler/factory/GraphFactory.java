@@ -5,7 +5,9 @@ import me.waaghals.dungeoncrawler.Room;
 
 import org.apache.commons.collections15.Factory;
 
+import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.UndirectedGraph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 

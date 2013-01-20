@@ -16,7 +16,6 @@ public class Player {
 
 	private HashMap<String, Item> backpack = new HashMap<String, Item>();
 	private Room currRoom; // The room the user is in
-	private Narrator farnsworth = Narrator.getInstance();
 	private int health = 100;
 
 	/**
@@ -38,21 +37,21 @@ public class Player {
 	 */
 	public void showBackpack() {
 		if(backpack.size() == 0){
-			farnsworth.say(Narrator.BACKPACK_EMPTY);
+			Narrator.say(Narrator.BACKPACK_EMPTY);
 			return;
 		}
 		int i = 0;
 		for (Entry<String, Item> item : backpack.entrySet()) {
 			// item key is the itemName
-			farnsworth.say(Narrator.BACKPACK_CONTENT, item.getKey());
+			Narrator.say(Narrator.BACKPACK_CONTENT, item.getKey());
 			//TODO fix this
 			// Add a comma between sentences
 			if (i > 0 && i < backpack.size()) {
-				farnsworth.say(", ");
+				Narrator.say(", ");
 
 				// In the last place add " and "
 			} else if (i == backpack.size()) {
-				farnsworth.say(" and ");
+				Narrator.say(" and ");
 			}
 		}
 	}
@@ -66,14 +65,14 @@ public class Player {
 	public boolean add(Item item) {
 		if (backpack.size() < BACKPACK_SIZE) {
 			if(get(item.getName()) != null){
-				farnsworth.say(Narrator.ITEM_DUPLICATE, item.getName());
+				Narrator.say(Narrator.ITEM_DUPLICATE, item.getName());
 				return true;
 			}
 			backpack.put(item.getName(), item);
-			farnsworth.say(Narrator.ITEM_RETRIEVED, item.getName());
+			Narrator.say(Narrator.ITEM_RETRIEVED, item.getName());
 			return true;
 		}
-		farnsworth.say(Narrator.BACKPACK_FULL, item.getName());
+		Narrator.say(Narrator.BACKPACK_FULL, item.getName());
 		return false;
 	}
 
@@ -97,7 +96,7 @@ public class Player {
 		if (item != null) {
 			item.use();
 		} else {
-			farnsworth.say(Narrator.ITEM_NOT_IN_BACKPACK, itemName);
+			Narrator.say(Narrator.ITEM_NOT_IN_BACKPACK, itemName);
 		}
 	}
 
@@ -106,7 +105,7 @@ public class Player {
 		if (item != null) {
 			item.use(argument);
 		} else {
-			farnsworth.say(Narrator.ITEM_NOT_IN_BACKPACK, itemName);
+			Narrator.say(Narrator.ITEM_NOT_IN_BACKPACK, itemName);
 		}
 	}
 
@@ -117,6 +116,7 @@ public class Player {
 		}
 		
 		//If the item does not exist fight with the fists
+		Narrator.say("You are fighting with your fists now.");
 		return fight();
 	}
 

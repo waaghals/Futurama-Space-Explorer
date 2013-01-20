@@ -1,5 +1,7 @@
 package me.waaghals.dungeoncrawler.items;
 
+import me.waaghals.dungeoncrawler.Narrator;
+
 
 /**
  * @author Patrick Berenschot
@@ -8,14 +10,15 @@ package me.waaghals.dungeoncrawler.items;
 public class Fists extends Item{
 	public Fists(){
 		super("fists");
-		super.setDamageMap(new int[] {0, 5, 5, 5, 8, 8, 15});
+		//super.setDamageMap(new int[] {0, 5, 5, 5, 8, 8, 15});
+		super.setDamageMap(new int[] {90,91,91,92,93});
 	}
 	
 	public void use() {
-		farnsworth.say("Can't use %s", getFancyName());
+		Narrator.say("Can't use %s", getFancyName());
 	}
 	
 	public void use(String something){
-		farnsworth.say("Can't use %s on %s", getFancyName(), something);
+		Narrator.say("Can't use %s on %s", getFancyName(), something);
 	}
 }

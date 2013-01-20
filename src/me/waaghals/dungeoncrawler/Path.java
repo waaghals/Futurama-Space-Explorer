@@ -1,5 +1,8 @@
 package me.waaghals.dungeoncrawler;
 
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.util.Pair;
+
 /**
  * @author Patrick Berenschot
  * 
@@ -25,12 +28,26 @@ public class Path {
 		this.direction = direction;
 	}
 
-	public Path(int id, int direction){
+	public Path(int id){
 		this.id = id;
-		this.direction = direction;
 	}
 	
+	//TODO Fix this BS
 	public String toString() {
-		return "P" + Integer.toString(id) + " " + getDirection();
+		Game currGame = Game.INSTANCE;
+		GameLevel currLevel = currGame.getGameLevel();
+		Graph<Room, Path> g = currLevel.getMap();
+		//g.getDest(currGame.getPlayer().getCurrRoom())
+		Pair<Room> rooms = g.getEndpoints(this);
+		if(rooms.getFirst() == currGame.getPlayer().getCurrRoom()){
+			int direction = rooms.getFirst().getDirectionByNeighbour(rooms.getSecond());
+			return Constants.getStringDirection(direction);
+		} else if (rooms.getSecond() == currGame.getPlayer().getCurrRoom()){
+			int direction = rooms.getSecond().getDirectionByNeighbour(rooms.getFirst());
+			return Constants.getStringDirection(direction);
+		}
+		//return id + " " + direction;
+		//return Constants.getStringDirection(getDirection());
+		return "";
 	}
 }
