@@ -31,6 +31,6 @@ public class Path {
 	}
 	
 	public String toString() {
-		return "P" + Integer.toString(getId());
+		return "P" + Integer.toString(id) + " " + getDirection();
 	}
 }

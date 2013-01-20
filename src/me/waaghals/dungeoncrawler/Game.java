@@ -4,10 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Properties;
+
 import javax.swing.JFrame;
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
+import edu.uci.ics.jung.algorithms.layout.FRLayout2;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import me.waaghals.dungeoncrawler.factory.GameLevelFactory;
 import me.waaghals.dungeoncrawler.items.*;
 import me.waaghals.dungeoncrawler.transformers.RoomPainter;
@@ -36,7 +45,7 @@ public enum Game {
 
 		player = new Player();
 		// Create the level and add them to the room
-		currLevel = new GameLevelFactory(5).create();
+		currLevel = new GameLevelFactory(1).create();
 		startRoom = currLevel.getRandomRoom();
 
 		intro();
@@ -277,10 +286,13 @@ public enum Game {
 			JFrame jf = new JFrame();
 			Graph<Room, Path> g = currLevel.getMap();
 			VisualizationViewer<Room, Path> vv = new VisualizationViewer<Room, Path>(
-					new CircleLayout<Room, Path>(g));
+					new FRLayout2<Room, Path>(g));
 			vv.getRenderContext().setVertexFillPaintTransformer(
 					new RoomPainter<Room>());
-
+			
+			vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<Path>());
+			vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<Room>());
+			
 			jf.getContentPane().add(vv);
 			// jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			jf.pack();

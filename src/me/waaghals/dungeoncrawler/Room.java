@@ -15,7 +15,9 @@ public class Room {
 	private int roomId; // Used in LevelFactory so that rooms can be kept apart.
 
 	public String toString() {
-		return "R" + Integer.toString(roomId);
+		int index = roomId % ROOM_LOCATIONS.length;
+		String[] roomText = ROOM_LOCATIONS;
+		return roomText[index];
 	}
 
 	public void setRoomId(int id) {
@@ -112,15 +114,6 @@ public class Room {
 			String stringDirection = Constants.getStringDirection(intDirection);
 
 			farnsworth.say(Narrator.DIRECTIONS, stringDirection);
-			// TODO make this work
-			// Add a comma between sentences
-			if (i > 0 && i < exits.size()) {
-				farnsworth.say(", ");
-
-				// In the last place add " and "
-			} else if (i == exits.size()) {
-				farnsworth.say(" and ");
-			}
 		}
 
 	}
