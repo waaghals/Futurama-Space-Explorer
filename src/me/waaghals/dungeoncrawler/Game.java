@@ -31,10 +31,10 @@ public enum Game {
 
 		player = new Player();
 		// Create the level and add them to the room
-		currLevel = new GameLevelFactory(5).create();
+		currLevel = new GameLevelFactory(1).create();
 		startRoom = currLevel.getRandomRoom();
 
-		// intro();
+		intro();
 		Narrator.say(Narrator.GAME_INTRO);
 		player.setCurrRoom(startRoom);
 

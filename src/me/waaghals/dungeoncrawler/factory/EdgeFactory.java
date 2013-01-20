@@ -1,6 +1,5 @@
 package me.waaghals.dungeoncrawler.factory;
 
-import me.waaghals.dungeoncrawler.Constants;
 import me.waaghals.dungeoncrawler.Path;
 
 import org.apache.commons.collections15.Factory;

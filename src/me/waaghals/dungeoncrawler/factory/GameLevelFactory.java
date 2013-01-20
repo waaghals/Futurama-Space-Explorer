@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Set;
 import org.apache.commons.collections15.Factory;
 import edu.uci.ics.jung.algorithms.generators.random.EppsteinPowerLawGenerator;
-import edu.uci.ics.jung.algorithms.transformation.DirectionTransformer;
 import edu.uci.ics.jung.graph.*;
 import edu.uci.ics.jung.graph.util.Pair;
 import me.waaghals.dungeoncrawler.*;
@@ -171,8 +170,7 @@ public class GameLevelFactory implements Factory<GameLevel>{
 			Iterator<Path> it = edges.iterator();
 			//System.out.println("Number of edges for Room " + v + " = " + i);
 			while (i > Constants.directions.length) {
-				int diff = i - Constants.directions.length;
-				//System.out.println("To many edges, nominated " + diff + "e edges for removal");
+				//System.out.println("To many edges, nominated " + i - Constants.directions.length + "e edges for removal");
 				Path e = it.next();
 				//g.removeEdge(e);
 				removeEdge.add(e);

@@ -21,10 +21,12 @@ public class ItemFactory implements Factory<Item> {
 			"me.waaghals.dungeoncrawler.items.PlanetaryAnnihilator" };
 
 	// Note these have the same index, important!
+	@SuppressWarnings("rawtypes")
 	private Class[] typeNames = { Ipod.class, Ipod.class, Stick.class,
 			Stick.class, Stick.class, Medicine.class, Medicine.class,
 			PlanetaryAnnihilator.class };
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Item create() {
 		int i = Constants.generator.nextInt(classNames.length);
