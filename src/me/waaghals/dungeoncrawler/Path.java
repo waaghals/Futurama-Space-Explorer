@@ -1,8 +1,5 @@
 package me.waaghals.dungeoncrawler;
 
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.util.Pair;
-
 /**
  * @author Patrick Berenschot
  * 

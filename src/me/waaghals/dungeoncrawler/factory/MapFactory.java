@@ -1,23 +1,15 @@
 package me.waaghals.dungeoncrawler.factory;
 
-import java.awt.Dimension;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import javax.swing.JFrame;
-
 import org.apache.commons.collections15.Factory;
 
 import edu.uci.ics.jung.algorithms.generators.GraphGenerator;
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import me.waaghals.dungeoncrawler.Constants;
 import me.waaghals.dungeoncrawler.Path;
-import me.waaghals.dungeoncrawler.Room;
 
 /**
  * A maze generator for the creation of maps
