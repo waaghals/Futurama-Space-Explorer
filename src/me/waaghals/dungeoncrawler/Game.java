@@ -1,12 +1,22 @@
 package me.waaghals.dungeoncrawler;
 
+import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JFrame;
+
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import me.waaghals.dungeoncrawler.factory.GameLevelFactory;
 import me.waaghals.dungeoncrawler.items.*;
+import me.waaghals.dungeoncrawler.transformers.*;
 
 /**
  * @author Patrick Berenschot
@@ -242,8 +252,10 @@ public enum Game {
 			player.getCurrRoom().sayEntryText();
 			player.getCurrRoom().sayPosibleDirections();
 			player.getCurrRoom().sayItems();
-			Narrator.say("There are " + getEnemyFromPlayerRoom().size() + " opponents");
-			Narrator.say("There are " + getDeadEnemyFromPlayerRoom().size() + " opponents which can be looted");
+			Narrator.say("There are " + getEnemyFromPlayerRoom().size()
+					+ " opponents");
+			Narrator.say("There are " + getDeadEnemyFromPlayerRoom().size()
+					+ " opponents which can be looted");
 			stepEnemies();
 			return true;
 
@@ -269,33 +281,38 @@ public enum Game {
 			return true;
 
 			// TODO un-fail this
-			/*
-			 * case "map":
-			 * 
-			 * // Show a window with the current map JFrame jf = new JFrame();
-			 * Graph<Room, Path> g = currLevel.getMap(); Dimension size = new
-			 * Dimension(900,900); FRLayout2<Room, Path> frMap = new
-			 * FRLayout2<Room, Path>(g); frMap.setRepulsionMultiplier(1.5);
-			 * frMap.setSize(size);
-			 * 
-			 * CircleLayout<Room, Path> circleMap = new CircleLayout<Room,
-			 * Path>(g); circleMap.setSize(size); VisualizationViewer<Room,
-			 * Path> vv = new VisualizationViewer<Room, Path>( frMap);
-			 * vv.getRenderContext().setVertexFillPaintTransformer(new
-			 * RoomPainter<Room>());
-			 * vv.getRenderContext().setVertexShapeTransformer(new
-			 * ItemShaper<Room>());
-			 * vv.getRenderContext().setArrowFillPaintTransformer(new
-			 * PathPainter<Path>());
-			 * vv.getRenderContext().setEdgeLabelTransformer(new
-			 * ToStringLabeller<Path>());
-			 * 
-			 * //jf.getContentPane().add(vv); jf.add(new
-			 * GraphZoomScrollPane(vv));
-			 * 
-			 * // jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			 * //jf.setSize(size); jf.pack(); jf.setVisible(true); return true;
-			 */
+
+		case "map":
+
+			// Show a window with the current map
+			JFrame jf = new JFrame();
+			Graph<Room, Path> g = currLevel.getMap();
+			//Dimension size = new Dimension(900, 900);
+
+			ISOMLayout<Room, Path> isomMap = new ISOMLayout<Room, Path>(getGameLevel().getMap());
+
+			VisualizationViewer<Room, Path> vv = new VisualizationViewer<Room, Path>(
+					isomMap);
+			vv.getRenderContext().setVertexFillPaintTransformer(
+					new RoomPainter<Room>());
+			vv.getRenderContext().setVertexShapeTransformer(
+					new ItemShaper<Room>());
+			vv.getRenderContext().setArrowFillPaintTransformer(
+					new PathPainter<Path>());
+			vv.getRenderContext().setEdgeLabelTransformer(
+					new ToStringLabeller<Path>());
+			vv.getRenderContext().setVertexLabelTransformer(
+					new ToStringLabeller<Room>());
+
+			// jf.getContentPane().add(vv);
+			jf.add(new GraphZoomScrollPane(vv));
+
+			//jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			//jf.setSize(size); 
+			jf.pack(); 
+			jf.setVisible(true);
+			return true;
+
 		case "quit":
 			// Player wants to quit, return false!
 			return false;
@@ -319,17 +336,13 @@ public enum Game {
 		}
 
 		// Does the currRoom have a exit in intDirection?
-		if (player.getCurrRoom().hasExit(intDirection)) {
+		Room playerRoom = player.getCurrRoom();
+		if (currLevel.hasRoomInDest(playerRoom, intDirection)) {
 			Narrator.say(Narrator.WALKING, direction);
-			try {
-				player.move(intDirection);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			player.move(intDirection);
 		} else {
 			Narrator.say(Narrator.NO_EXIT, direction);
 		}
-
 	}
 
 	private void handleUseCommand(String itemName) {

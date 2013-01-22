@@ -1,6 +1,7 @@
 package me.waaghals.dungeoncrawler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import edu.uci.ics.jung.algorithms.shortestpath.ShortestPathUtils;
@@ -14,14 +15,13 @@ import edu.uci.ics.jung.graph.Graph;
 public class GameLevel {
 
 	private Graph<Room, Path> map;
-	private StringBuilder stats = new StringBuilder();
 	private int level = 1;
+	private int numRooms;
+	private int numEnemies;
+	private int numPaths;
+	private int numItems;
 	private List<Enemy> enemies = new ArrayList<Enemy>();
-	
-	public GameLevel(Graph<Room, Path> map){
-		this.map = map;
-	}
-	
+
 	public int getLevel(){
 		return level;
 	}
@@ -38,25 +38,6 @@ public class GameLevel {
 		}
 		//Won't reach
 		return null;
-	}
-	
-	public String toString(){
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append("Level: " + level + "\n");
-		builder.append("Current map:\n");
-		builder.append(map);
-		builder.append("\nStats:\n");
-		builder.append(stats);
-		return builder.toString();
-	}
-
-	public void addStat(String string) {
-		stats.append(string);
-	}
-
-	public void setLevel(int level) {
-		this.level = level;
 	}
 	
 	public Graph<Room, Path> getMap(){
@@ -76,11 +57,56 @@ public class GameLevel {
 		return map.getOpposite(startRoom, firstPath);
 	}
 	
+	public Room getRoomInDest(Room sourceRoom, int direction){
+		Collection<Path> paths = map.getOutEdges(sourceRoom);
+		for (Path path : paths) {
+			if(path.getDirection() == direction){
+				return map.getOpposite(sourceRoom, path);
+			}
+		}
+		return null;
+	}
+	
+	public boolean hasRoomInDest(Room sourceRoom, int direction){
+		Collection<Path> paths = map.getOutEdges(sourceRoom);
+		for (Path path : paths) {
+			if(path.getDirection() == direction){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public List<Enemy> getEnemies(){
 		return enemies;
 	}
 	
 	public void addEnemies(Enemy enemy){
 		enemies.add(enemy);
+	}
+
+	public void setGraph(Graph<Room, Path> graph) {
+		map = graph;		
+	}
+
+	public void setStats(int level, int numRooms, int numItems,
+			int numEnemies, int vertexCount) {
+		this.level = level;
+		this.numRooms = numRooms;
+		this.numItems = numItems;
+		this.numEnemies = numEnemies;
+		this.numPaths = vertexCount;
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Level stats\n");
+		sb.append("-----------\n");
+		sb.append("Level " + level + "\n");
+		sb.append("Rooms " + numRooms + "\n");
+		sb.append("Enemies " + numEnemies + "\n");
+		sb.append("Paths " + numPaths + "\n");
+		sb.append("Items " + numItems + "\n");
+		return sb.toString();
 	}
 }

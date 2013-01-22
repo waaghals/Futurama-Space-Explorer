@@ -9,8 +9,8 @@ import edu.uci.ics.jung.graph.util.Pair;
  */
 public class Path {
 
-	int id;	//Each Path should be unique mandated by the JUNG library
-	int direction;
+	private int id;	//Each Path should be unique mandated by the JUNG library
+	private int direction;
 	
 	public int getId() {
 		return id;
@@ -32,22 +32,7 @@ public class Path {
 		this.id = id;
 	}
 	
-	//TODO Fix this BS
-	public String toString() {
-		Game currGame = Game.INSTANCE;
-		GameLevel currLevel = currGame.getGameLevel();
-		Graph<Room, Path> g = currLevel.getMap();
-		//g.getDest(currGame.getPlayer().getCurrRoom())
-		Pair<Room> rooms = g.getEndpoints(this);
-		if(rooms.getFirst() == currGame.getPlayer().getCurrRoom()){
-			int direction = rooms.getFirst().getDirectionByNeighbour(rooms.getSecond());
-			return Constants.getStringDirection(direction);
-		} else if (rooms.getSecond() == currGame.getPlayer().getCurrRoom()){
-			int direction = rooms.getSecond().getDirectionByNeighbour(rooms.getFirst());
-			return Constants.getStringDirection(direction);
-		}
-		//return id + " " + direction;
-		//return Constants.getStringDirection(getDirection());
-		return "";
+	public String toString(){
+		return Constants.getStringDirection(direction);
 	}
 }

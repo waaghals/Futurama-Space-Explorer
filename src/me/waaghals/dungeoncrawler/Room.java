@@ -18,11 +18,11 @@ public class Room {
 	private int roomId; // Used in LevelFactory so that rooms can be kept apart.
 
 	public String toString() {
-		return roomId + "";
-		/*
+		
+		
 		int index = roomId % ROOM_LOCATIONS.length;
 		String[] roomText = ROOM_LOCATIONS;
-		return roomText[index];*/
+		return roomText[index] + " (R" + roomId + ")";
 	}
 
 	public void setRoomId(int id) {

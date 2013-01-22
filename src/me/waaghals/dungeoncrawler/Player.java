@@ -134,10 +134,10 @@ public class Player {
 	 * @throws Exception 
 	 */
 	public void move(int direction) {
-		
-		//double check that there is a room there.
-		if (currRoom.hasExit(direction)) {
-			setCurrRoom(currRoom.getAdjacentRoom(direction));
+		GameLevel currLevel = Game.INSTANCE.getGameLevel();
+		Room newRoom = currLevel.getRoomInDest(currRoom, direction);
+		if(newRoom != null){
+			setCurrRoom(newRoom);
 		}
 	}
 
