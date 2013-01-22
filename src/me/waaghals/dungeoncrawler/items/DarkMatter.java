@@ -18,7 +18,7 @@ public class DarkMatter extends Item {
 		Game currGame = Game.INSTANCE;
 		//Is the player back where he started?
 		if(currGame.isHome()){
-			Narrator.say("Game complete!");
+			Narrator.say(Narrator.LEVEL_COMPLETE);
 			currGame.levelUp();
 		} else {
 			Narrator.say("You can't do that here. We need to be back at the spaceship.");
