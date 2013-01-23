@@ -248,6 +248,7 @@ public enum Game {
 			return true;
 
 		case "look":
+			stepEnemies();
 			player.getCurrRoom().sayEntryText();
 			player.getCurrRoom().sayPosibleDirections();
 			player.getCurrRoom().sayItems();
@@ -255,7 +256,6 @@ public enum Game {
 					+ " opponents");
 			Narrator.say("There are " + getDeadEnemyFromPlayerRoom().size()
 					+ " opponents which can be looted");
-			stepEnemies();
 			return true;
 
 		case "fight":

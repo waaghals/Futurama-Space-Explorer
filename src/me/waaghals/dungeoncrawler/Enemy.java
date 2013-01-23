@@ -31,6 +31,7 @@ public class Enemy {
 
 	public Enemy(Item weapon, int speed) {
 		this.weapon = weapon;
+		this.setLootItem(weapon);
 		this.speed = speed;
 	}
 
